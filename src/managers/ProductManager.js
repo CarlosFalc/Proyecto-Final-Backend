@@ -42,6 +42,7 @@ class ProductManager{
         }
     };
 
+
     async getProducts(){
         try {
             if(this.fileExists()){

@@ -5,26 +5,22 @@ const productManager = new ProductManager("products.json");
 
 const router = Router();
 
+// Obtener todos los productos, incluyendo la limitación ?limit
 router.get("/", async(req,res)=>{
     try {
         const products = await productManager.getProducts();
-        res.json({status:"success", data:products});
+        const limit = req.query.limit;
+        if(limit){
+            let productsLimit =[];
+            for(let i = 0; i < limit; i++){
+                productsLimit.push(products[i]);
+            }
+            res.json({status:"success", data:productsLimit});
+        }else{
+            res.json({status:"success", data:products});
+        }
     } catch (error) {
         res.status(400).json({status:"error", message:error.message});
-    }
-});
-
-// http:localhost:8080/api/products?limit=
-router.get("/?limit=", async (req,res) => {
-    try{
-        let limit = parseInt (req.query.limit);
-        if(!limit) 
-            return  res.send(await productManager.getProducts())
-        const allProducts = await productManager.getProducts();
-        let productLimitet = allProducts.filter(0, limit);  
-        res.send(productLimitet);
-    } catch(error){
-        throw new error(error.mesage);
     }
 });
 
