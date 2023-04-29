@@ -11,11 +11,11 @@ router.get("/", async(req,res)=>{
         const products = await productManager.getProducts();
         const limit = req.query.limit;
         if(limit){
-            let productsLimit =[];
+            let productsLimited =[];
             for(let i = 0; i < limit; i++){
-                productsLimit.push(products[i]);
+                productsLimited.push(products[i]);
             }
-            res.json({status:"success", data:productsLimit});
+            res.json({status:"success", data:productsLimited});
         }else{
             res.json({status:"success", data:products});
         }
