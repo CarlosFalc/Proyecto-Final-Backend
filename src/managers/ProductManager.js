@@ -46,7 +46,7 @@ class ProductManager{
         try {
             if(this.fileExists()){
                 const content = await fs.promises.readFile(this.path,"utf-8");
-                const products = JSON.parce(content);
+                const products = JSON.parse(content);
                 return products;
             } else {
                 throw new Error("El archivo no existe");
@@ -105,8 +105,8 @@ class ProductManager{
             if(this.fileExists()){
                 const content = await fs.promises.readFile(this.path,"utf-8");
                 const products = JSON.parse(content);
-                const productFil = products.filter(item=>item.id === id);
-                return productFil;
+                const productRemoved = products.filter(item=>item.id === id);
+                return productRemoved;
             } else {
                 throw new Error("El producto no existe");
             }

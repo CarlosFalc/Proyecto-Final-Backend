@@ -15,26 +15,53 @@ router.get("/", async(req,res)=>{
 });
 
 // http:localhost:8080/api/products?limit=
-router.get("/api/products?limit",async(req,res)=>{
+router.get("/?limit=", async (req,res) => {
+    try{
+        let limit = parseInt (req.query.limit);
+        if(!limit) 
+            return  res.send(await productManager.getProducts())
+        const allProducts = await productManager.getProducts();
+        let productLimitet = allProducts.filter(0, limit);  
+        res.send(productLimitet);
+    } catch(error){
+        throw new error(error.mesage);
+    }
+});
+
+// http:localhost:8080/api/products/id=1
+router.get("/:pid",async(req,res)=>{
+try {
+    const id = req.params.pid;
+    const product = await productManager.getProductById(id);
+    if(product){
+        res.json({status:"success", data:product});
+        } else {
+        res.status(400).json({status:"error", message:"El producto no existe"});
+        }
+} catch(error){
+    res.status(400).json({status:"error", message:error.message});
+}
+});
+
+router.put("/:pid", async(req,res)=>{
     try {
-        console.log(req.query);
-        const limit = req.query.limit;
-        const product = await productManager.filter(p => p.limit === limit);
-        res.send(product);
+    const id = req.params.pid;
+    const productUpdate = req.body;
+    const product = await productManager.updateProduct(id, productUpdate);
+    return (product);
     } catch(error){
         res.status(400).json({status:"error", message:error.message});
     }
 });
 
-// http:localhost:8080/api/products/id=1
-router.get("/api/products/:id",async(req,res)=>{
-try {
-    const id = req.params.pid;
-    const product = await productManager.find(p=>p.id === id);
-    res.send(product);
-} catch(error){
-    res.status(400).json({status:"error", message:error.message});
-}
+router.delete("/:pid",async(req,res)=>{
+    try {
+    const id = req.params.id;
+    const productId = await productManager.deleteProduct(id);
+    return (productId);
+    } catch(error){
+        res.status(400).json({status:"error", message:error.message});
+    }
 });
 
 // endpoint para agregar el producto
@@ -48,27 +75,6 @@ router.post("/",async(req,res)=>{
         const productSaved = await productManager.addProduct(newProduct);
         res.json({status:"success", data:productSaved});
     } catch (error) {
-        res.status(400).json({status:"error", message:error.message});
-    }
-});
-
-router.put("/api/products/:id", async(req,res)=>{
-    try {
-    const id = req.params.id;
-    const updateProduct = req.body;
-    const productIndex = await product.updateProduct(id, updateProduct);
-    return (productIndex);
-    } catch(error){
-        res.status(400).json({status:"error", message:error.message});
-    }
-});
-
-router.delete("/api/products/:id",async(req,res)=>{
-    try {
-    const id = req.params.id;
-    const productId = await productManager.deleteProduct(id);
-    return (productId);
-    } catch(error){
         res.status(400).json({status:"error", message:error.message});
     }
 });
