@@ -1,12 +1,23 @@
-//console.log("home js");
+console.log("home js")
 const socketClient = io();
+
+const chatBox = document.getElementById("chatBox");
+const sendButton = document.getElementById("sendButton");
 const chatHistory = document.getElementById("chatHistory");
 
-socketClient.on("message.Server",(data)=>{
-    console.log(data)
-    setTimeout(() => {
-        socketClient.emit("messageClient","confirmacion recibida")
-    }, 5000);
+const sendMessage = ()=>{
+    socketClient.emit("message",chatBox.value);
+    chatBox.value="";
+}
+
+sendButton.addEventListener("click",(e)=>{
+    sendMessage()
+});
+
+chatBox.addEventListener("keydown",(evt)=>{
+    if(evt.key === "Enter"){
+        sendMessage()
+    }
 });
 
 socketClient.on("chatMessages",(data)=>{
