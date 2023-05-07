@@ -31,5 +31,16 @@
     "category": "Baño y Cocina",
     "thumbnail": "https://sodimac.scene7.com/is/image/SodimacCL/3686175_01?wid=1500&hei=1500&qlt=70",
     "id": 3
+  },
+  {
+    "title": "Instalación de Termo Eléctrico",
+    "description": "Servicios de instalación Sodimac",
+    "code": "3686178",
+    "price": "72.990",
+    "status": true,
+    "stock": 1000,
+    "category": "Baño y Cocina",
+    "thumbnail": "https://sodimac.scene7.com/is/image/SodimacCL/3686175_01?wid=1500&hei=1500&qlt=70",
+    "id": 4
   }
 ]

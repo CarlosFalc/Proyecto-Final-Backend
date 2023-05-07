@@ -20,6 +20,7 @@ app.use(express.static(path.join(__dirname,"/public")));
 app.use("/api/products",productRouter);
 app.use("/api/carts",cartRouter);
 app.use(viewsRouter);
+app.use("/realtimeproducts", viewsRouter);
 
 //servidor http
 const httpServer = app.listen(port,()=>console.log(`Server on listening on port ${port}`));
@@ -32,6 +33,7 @@ app.engine("handlebars",handlebars.engine());
 app.set("views",path.join(__dirname,"/views"));
 app.set("view engine","handlebars");
 
+//función principal del servidor websocket
 socketServer.on("connection",(socket)=>{
     console.log(`nuevo socket cliente conectado ${socket.id}`)
     socket.emit("message.Server","Conectado exitosamente");

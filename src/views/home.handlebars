@@ -3,10 +3,10 @@
 <script src="js/home.js"></script>
 <div>
     <h2>Bienvenido</h2>
-    <p>Listado de productos:</p>
+    <p>Listado de Servicios:</p>
     <ul>
-            {{#each services}}
-            <li>Producto: {{this.title}}  - Descripción: {{this.description}}  - Código: {{this.code}}  - Precio: {{this.price}}  - Stock: {{this.stock}} - Categoría: {{this.category}} - Imágen: {{this.thumbnail}} - Id: {{this.id}}</li><br>
+            {{#each Services}}
+            <li>Servicio: {{this.title}}  - Descripción: {{this.description}}  - Código: {{this.code}}  - Precio: {{this.price}}  - Stock: {{this.stock}} - Categoría: {{this.category}} - Imágen: {{this.thumbnail}} - Id: {{this.id}}</li><br>
             {{/each}}
     </ul>
 </div>
