@@ -1,32 +1,38 @@
 console.log("home js")
 const socketClient = io();
 
-const chatBox = document.getElementById("chatBox");
+const id = document.getElementById("chatBox");
 const sendButton = document.getElementById("sendButton");
-const chatHistory = document.getElementById("chatHistory");
+const divServices = document.getElementById("divServices");
 
 const sendMessage = ()=>{
     socketClient.emit("message",chatBox.value);
-    chatBox.value="";
-}
+    socketClient.emit("message",prd.value);
+    socketClient.emit("message",cod.value);
+    socketClient.emit("message",pr.value);
+    socketClient.emit("message",stk.value);
+    socketClient.emit("message",cat.value);
+    socketClient.emit("message",link.value);
+    socketClient.emit("message",di.value);
+    }
 
 sendButton.addEventListener("click",(e)=>{
     sendMessage()
 });
 
-chatBox.addEventListener("keydown",(evt)=>{
+id.addEventListener("keydown",(evt)=>{
     if(evt.key === "Enter"){
         sendMessage()
-    }
+    }    
 });
 
-socketClient.on("chatMessages",(data)=>{
+socketClient.on("addServices",(data)=>{
     console.log(data);
-    chatHistory.innerHTML="";
+    divServices.innerHTML="";
     data.forEach(itemMsg => {
         //crear un parrafo por mensaje
         const parrafo = document.createElement("p");
-        parrafo.innerHTML=`id:${itemMsg.socketId} >>> ${itemMsg.message}`;
-        chatHistory.appendChild(parrafo);
+        parrafo.innerHTML=`${itemMsg.message}`;
+        divServices.appendChild(parrafo);
     });
 });

@@ -34,10 +34,13 @@ app.set("views",path.join(__dirname,"/views"));
 app.set("view engine","handlebars");
 
 //función principal del servidor websocket
+let messages = [];
 socketServer.on("connection",(socket)=>{
     console.log(`nuevo socket cliente conectado ${socket.id}`)
-    socket.emit("message.Server","Conectado exitosamente");
-    socket.on("messageClient",(data)=>{
-        console.log("mensaje desde el cliente", data)
+    socket.emit("addServices",messages);
+    
+    socket.on("message",(data)=>{
+        messages.push({message:data});
+        socketServer.emit("addServices",messages);
     });
 });
