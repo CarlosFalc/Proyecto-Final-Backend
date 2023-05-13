@@ -3,9 +3,12 @@ import { Server } from "socket.io";
 import handlebars from "express-handlebars";
 import { __dirname } from "./utils.js";
 import path from "path";
-import { viewsRouter } from "./routes/views.routes.js";
+import { viewRouter } from "./routes/views.routes.js";
+import { ProductManager } from "./managers/ProductManager.js";
 import { productRouter } from "./routes/products.routes.js";
 import { cartRouter } from "./routes/carts.routes.js";
+
+const productManager = new ProductManager("products.json");
 
 //configuración del servidor express (http)
 const app = express();
@@ -19,14 +22,16 @@ app.use(express.static(path.join(__dirname,"/public")));
 //routes
 app.use("/api/products",productRouter);
 app.use("/api/carts",cartRouter);
-app.use(viewsRouter);
-app.use("/realtimeproducts", viewsRouter);
+app.use(viewRouter);
+app.use("/realTimeProducts", viewRouter);
 
 //servidor http
-const httpServer = app.listen(port,()=>console.log(`Server on listening on port ${port}`));
+const httpServer = app.listen(port,()=>
+console.log(`Server on listening on port ${port}`));
 
 //servidor de websocket
-const socketServer = new Server(httpServer);
+const io = new Server(httpServer);
+
 
 //configuración del motor de plantillas
 app.engine("handlebars",handlebars.engine());
@@ -34,13 +39,15 @@ app.set("views",path.join(__dirname,"/views"));
 app.set("view engine","handlebars");
 
 //función principal del servidor websocket
-let messages = [];
-socketServer.on("connection",(socket)=>{
-    console.log(`nuevo socket cliente conectado ${socket.id}`)
-    socket.emit("addServices",messages);
-    
-    socket.on("message",(data)=>{
-        messages.push({message:data});
-        socketServer.emit("addServices",messages);
-    });
+io.on("connection", async (socket) => {
+	console.log("id: " + socket.client.conn.id);
+
+	const items = await productManager.getProducts();
+	socket.emit("itemShow", items);
+
+	socket.on("item", async (product) => {
+		await productManager.addProduct(product);
+		const items = await productManager.getProducts();
+		io.emit("itemShow", items);
+	});
 });

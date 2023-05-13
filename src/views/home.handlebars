@@ -2,12 +2,17 @@
 <div>
     <h2>Bienvenido</h2>
     <p>Listado de Servicios:</p>
-    <ul>
-            {{#each Services}}
-            <li>Servicio: {{this.title}}  - Descripción: {{this.description}}  - Código: {{this.code}}  - Precio: {{this.price}}  - Stock: {{this.stock}} - Categoría: {{this.category}} - Imágen: {{this.thumbnail}} - Id: {{this.id}}</li><br>
-            {{/each}}
+    <ul id="productsBox">
+        {{#each products}}
+            <li>Servicio: {{this.title}} </li>
+            <p>Descripción: {{this.description}} </p>
+            <p>Código: {{this.code}} </p>
+            <p>Precio: {{this.price}} </p>
+            <p>Stock: {{this.stock}} </p>
+            <p>Categoría: {{this.category}} </p>
+            <p>URL de Imágen: {{this.thumbnail}} </p>
+            <p>Id: {{this.id}} </p>
+            <hr />
+        {{/each}}
     </ul>
 </div>
-
-<script src="socket.io/socket.io.js"></script>
-<script src="js/home.js"></script>

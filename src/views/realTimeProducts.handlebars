@@ -1,26 +1,26 @@
-<h4>Página principal</h4>
+<h5>Página principal</h5>
 <div>
     <h2>Bienvenido</h2>
-    <p>Listado de Servicios:</p>
-    <ul>
-            {{#each Services}}
-            <li>Servicio: {{this.title}}  - Descripción: {{this.description}}  - Código: {{this.code}}  - Precio: {{this.price}}  - Stock: {{this.stock}} - Categoría: {{this.category}} - Imágen: {{this.thumbnail}} - Id: {{this.id}}</li><br>
-            {{/each}}
-    </ul>
+	<hr />
+	<h4>Agregar Servicio:</h4>
+        
+    <form id="productForm">
+		<input type="text" placeholder="Servicio" name="title" />
+		<input type="text" placeholder="Descripción" name="description" />
+		<input type="text" placeholder="Código" name="code" />
+		<input type="text" placeholder="Precio" name="price" />
+		<input type="text" placeholder="Stock" name="stock" />
+		<input type="text" placeholder="Categoría" name="category" />
+		<input type="text" placeholder="URL de imágen" name="thumbnails" /><br>
+		<br><button type="submit">Agregar</button><br>
+
+	<hr />
+	</form>
+	
+
+	<h3>Listado de Servicios:</h3>
+	<div id="divServices"></div>
 </div>
 
-<input type="text" id="chatBox" placeholder="servicio"/><br>
-<input type="text" id="prd" placeholder="descripción"/><br>
-<input type="number" id="cod" placeholder="código"/><br>
-<input type="number" id="pr" placeholder="precio"/><br>
-<input type="number" id="stk" placeholder="stock"/><br>
-<input type="text" id="cat" placeholder="categoría"/><br>
-<input type="text" id="link" placeholder="link de imágen"/><br>
-<input type="nmuber" id="di" placeholder="Id"/><br>
-<br><button id="sendButton">Agregar</button>
-<button id="resetButton">Eliminar</button>
-
-<div id="divServices"></div>
-
 <script src="socket.io/socket.io.js"></script>
-<script src="js/home.js"></script>
+<script src="/js/realTimeProducts.js"></script>

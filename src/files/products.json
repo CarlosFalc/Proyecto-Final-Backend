@@ -42,5 +42,16 @@
     "category": "Baño y Cocina",
     "thumbnail": "https://sodimac.scene7.com/is/image/SodimacCL/3686175_01?wid=1500&hei=1500&qlt=70",
     "id": 4
+  },
+  {
+    "title": "Armado de Parrilla",
+    "description": "Servicios de armado Sodimac",
+    "code": "2696630",
+    "price": "44.990",
+    "status": "true",
+    "stock": "900",
+    "category": "Parrillas",
+    "thumbnails": "https://sodimac.scene7.com/is/image/SodimacCL/2696630_01?wid=1500&hei=1500&qlt=70",
+    "id": 5
   }
 ]
