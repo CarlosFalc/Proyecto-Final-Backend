@@ -31,7 +31,7 @@ socketClient.on("itemShow", (data) => {
 		const itemsElements = document.createElement("div");
 		itemsElements.id = product.id;
 		itemsElements.innerHTML = `
-		<p>Id: ${product.id}</p>
+			<p>Id: ${product.id}</p>
         	<p>Producto: ${product.title} </p>
         	<p>Descripcion: ${product.description} </p>
         	<p>Codigo: ${product.code}</p>

@@ -5,6 +5,10 @@ const productManager = new ProductManager("products.json");
 
 const viewRouter = Router();
 
+viewRouter.get("/",(req,res)=>{
+	res.render("chat");
+});
+
 viewRouter.get("/", async (req, res) => {
 	try {
 		const products = await productManager.getProducts();

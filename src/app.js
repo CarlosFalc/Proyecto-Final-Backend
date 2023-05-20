@@ -7,6 +7,8 @@ import { viewRouter } from "./routes/views.routes.js";
 import { ProductManager } from "./managers/ProductManager.js";
 import { productRouter } from "./routes/products.routes.js";
 import { cartRouter } from "./routes/carts.routes.js";
+import { connectDB } from "./config/dbConnection.js";
+import { ChatMongo } from "./dao/managers/chat.mongo.js";
 
 const productManager = new ProductManager("products.json");
 
@@ -18,6 +20,9 @@ const port = 8080;
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname,"/public")));
+
+//Conexión a la base de datos
+connectDB();
 
 //routes
 app.use("/api/products",productRouter);
@@ -32,6 +37,19 @@ console.log(`Server on listening on port ${port}`));
 //servidor de websocket
 const io = new Server(httpServer);
 
+//Configuración del chat
+const chatService = new ChatMongo();
+io.on("connection",async(socket)=>{
+	const messages = await chatService.getMessages();
+	io.emit("msgHistory", messages);
+
+	//Recibir el mensaje del cliente
+	socket.on("message",async(data)=>{
+		await chatService.addMessage(data);
+		const messages = await chatService.getMessages();
+		io.emit("msgHistory", messages);
+	});
+});
 
 //configuración del motor de plantillas
 app.engine("handlebars",handlebars.engine());
