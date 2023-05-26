@@ -23,5 +23,5 @@ export class ChatMongo{
         } catch (error) {
             throw new Error(`Hubo un error al guardar el mensaje`)
         }
-    };
+    }
 }

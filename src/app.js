@@ -41,7 +41,7 @@ const io = new Server(httpServer);
 const chatService = new ChatMongo();
 io.on("connection",async(socket)=>{
 	const messages = await chatService.getMessages();
-	io.emit("msgHistory", messages);
+	socket.broadcast.emit("msgHistory", messages);
 
 	//Recibir el mensaje del cliente
 	socket.on("message",async(data)=>{
