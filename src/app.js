@@ -3,7 +3,7 @@ import { Server } from "socket.io";
 import handlebars from "express-handlebars";
 import { __dirname } from "./utils.js";
 import path from "path";
-import { viewRouter } from "./routes/views.routes.js";
+import { viewsRouter } from "./routes/views.routes.js";
 import { ProductManager } from "./managers/ProductManager.js";
 import { productRouter } from "./routes/products.routes.js";
 import { cartRouter } from "./routes/carts.routes.js";
@@ -25,10 +25,10 @@ app.use(express.static(path.join(__dirname,"/public")));
 connectDB();
 
 //routes
+app.use(viewsRouter);
 app.use("/api/products",productRouter);
 app.use("/api/carts",cartRouter);
-app.use(viewRouter);
-app.use("/realTimeProducts", viewRouter);
+app.use("/realTimeProducts", viewsRouter);
 
 //servidor http
 const httpServer = app.listen(port,()=>
