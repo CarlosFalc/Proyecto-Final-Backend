@@ -1,26 +1,27 @@
 import fs from "fs";
+import path from "path";
 import {__dirname} from "../../utils.js";
 import {options} from "../../config/options.js";
-import path from "path";
 
-export class CartFiles{
-    constructor(){
-        this.path = path.join(__dirname,`/dao/files/${options.filesystem.carts}`)
-    }
+
+class CartManager{
+    constructor(pathFile){
+        this.path = path.join(__dirname,`/dao/files/${pathFile}`);
+    };
 
     fileExists(){
         return fs.existsSync(this.path);
     };
 
-    generateId(products){
+    generateId(carts){
         let newId;
-        if(!products.length){
+        if(!carts.length){
             newId=1;
         } else{
-            newId=products[products.length-1].id+1;
+            newId=carts[carts.length-1].id+1;
         }
         return newId;
-    }
+    };
 
     async addCart(){
         try {
@@ -57,7 +58,7 @@ export class CartFiles{
                 if(cart){
                     return cart;
                 } else {
-                    return null;
+                    throw new Error("no se encontró el carrito");
                 }
             } else {
                 throw new Error("El archivo no existe");
@@ -72,7 +73,7 @@ export class CartFiles{
             if(this.fileExists()){
                 const content = await fs.promises.readFile(this.path,"utf-8");
                 const carts = JSON.parse(content);
-                const cartIndex=carts.findIndex(item=>item.id === parseInt(cartId));
+                const cartIndex = carts.findIndex(item=>item.id === parseInt(cartId));
                 if(cartIndex>=0){
                     const productIndex = carts[cartIndex].products.findIndex(item=>item.product === parseInt(productId));
                     if(productIndex>=0){
@@ -100,4 +101,27 @@ export class CartFiles{
             throw new Error(error.message);
         }
     };
-};
+
+    async deleteProducts(id){
+        try {
+            if (this.fileExists()) {
+                const content = await fs.promises.readFile(this.path, "utf-8");
+                const products = JSON.parse(content);
+                const product = products.find((element)=>element.id === parseInt(id));
+                if (product) {
+                    const filteredProducts = products.filter((element)=>element.id !== parseInt(id));
+                    await fs.promises.writeFile(this.path, JSON.stringify(filteredProducts, null, 2));
+                    return filteredProducts
+                } else {
+                    return null;
+                };
+                
+            } else{
+                throw new Error("El archivo no existe");
+            }
+        } catch (error) {
+            throw new error(error.message);
+        }
+    };
+}
+export {CartManager};

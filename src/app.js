@@ -4,7 +4,7 @@ import handlebars from "express-handlebars";
 import { __dirname } from "./utils.js";
 import path from "path";
 import { viewsRouter } from "./routes/views.routes.js";
-import { ProductManager } from "./managers/ProductManager.js";
+import { ProductManager } from "./dao/managers/ProductManager.js";
 import { productRouter } from "./routes/products.routes.js";
 import { cartRouter } from "./routes/carts.routes.js";
 import { connectDB } from "./config/dbConnection.js";

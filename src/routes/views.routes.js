@@ -1,13 +1,39 @@
 import { Router } from "express";
-import { ProductsMongo } from "../dao/managers/products.mongo.js";
-//import { ProductManager } from "../managers/ProductManager.js";
+import { ProductManager } from "../dao/managers/ProductManager.js";
+import { ProductsMongo } from "../dao/managers/ProductMongo.js";
+import { CartsMongo } from "../dao/managers/CartMongo.js";
 
-const productsService = new ProductsMongo();
+const productManager = new ProductsMongo();
+const cartManager = new CartsMongo();
 
 const router = Router();
 
-router.get("/",(req,res)=>{
-	res.render("home");
+router.get("/", async(req,res)=>{
+    try {
+        const products = await productManager.getProducts();
+        
+        res.render("home", {products: products});
+    } catch (error) {
+        res.status(400).json({status: "error", message: error.message});
+    }   
+});
+
+router.get("/realTimeProducts", async(req, res) => {
+    try {
+        const products = await productManager.getProducts();
+    	res.render("realTimeProducts", {products: products});
+    	} catch (error) {
+    		res.status(400).json({ status: "error", message: error.message});
+    	}
+});
+
+
+router.get("/chat", async(req, res) => {
+    try {
+        res.render("chat");
+        } catch (error) {
+            res.status(400).json({status: "error", message: error.message});
+        }
 });
 
 router.get("/products",async(req,res)=>{
@@ -35,7 +61,7 @@ router.get("/products",async(req,res)=>{
         const baseUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
         console.log("baseUrl", baseUrl);
         //baseUrl: http://localhost:8080/api/products
-        const result = await productsService.getPaginate(query, {
+        const result = await productManager.getPaginate(query, {
             page,
             limit,
             sort:{price:sortValue},
@@ -58,28 +84,21 @@ router.get("/products",async(req,res)=>{
         console.log("response: ", response);
         res.render("products",response);
     } catch (error) {
-        res.json({status:"error", message:error.message});
+        res.status(400).json({status:"error", message:error.message});
     }
-    res.render("products");
+    
+});
+
+router.get("/cart/:cid",async(req,res)=>{
+    try {
+        const cartId = req.params.cid;
+        const cart = await cartManager.getCartById(cartId);
+        res.render("cartFullInfo", cart);
+        console.log(cart);
+    } catch (error) {
+       
+        res.send(`<div>error al cargar esta vista</div>`);
+    }
 });
 
 export {router as viewsRouter};
-
-// viewRouter.get("/", async (req, res) => {
-// 	try {
-// 		const products = await productManager.getProducts();
-// 		res.render("home", { products });
-// 	} catch (error) {
-// 		res.status(400).json({ status: "error", message: error.message });
-// 	}
-// });
-
-// viewRouter.get("/realTimeProducts", (req, res) => {
-// 	try {
-// 		res.render("realTimeProducts");
-// 	} catch (error) {
-// 		res.status(400).json({ status: "error", message: error.message });
-// 	}
-// });
-
-// export { viewRouter };

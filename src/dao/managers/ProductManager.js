@@ -1,9 +1,10 @@
 import fs from "fs";
+import path from "path";
 import {__dirname} from "../../utils.js";
 import {options} from "../../config/options.js";
-import path from "path";
 
-export class ProductsFiles{
+
+class ProductManager{
     constructor(){
         this.path = path.join(__dirname,`/dao/files/${options.filesystem.products}`)
     }
@@ -23,9 +24,9 @@ export class ProductsFiles{
 	}
 
 	async codeDuplicate(code) {
-		let content = await fs.promises.readFile(this.path, "utf-8");
-		let products = JSON.parse(content);
-		for (let i = 0; i < products.length; i++) {
+		const content = await fs.promises.readFile(this.path, "utf-8");
+		const products = JSON.parse(content);
+		for (const i = 0; i < products.length; i++) {
 			if (products[i].code === code) {
 				return true;
 			}
@@ -40,25 +41,17 @@ export class ProductsFiles{
 			}
 
 			if (this.fileExists()) {
-				let content = await fs.promises.readFile(this.path, "utf-8");
-				let products = JSON.parse(content);
-				let productId = this.generateId(products);
+				const content = await fs.promises.readFile(this.path, "utf-8");
+				const products = JSON.parse(content);
+				const productId = this.generateId(products);
 				product.id = productId;
-
 				products.push(product);
-				await fs.promises.writeFile(
-					this.path,
-					JSON.stringify(products, null, 2)
-				);
+				await fs.promises.writeFile(this.path, JSON.stringify(products, null, 2));
 				return product;
 			} else {
-				let productId = this.generateId([]);
+				const productId = this.generateId([]);
 				product.id = productId;
-
-				await fs.promises.writeFile(
-					this.path,
-					JSON.stringify([product], null, 2)
-				);
+				await fs.promises.writeFile(this.path, JSON.stringify([product], null, 2));
 				return product;
 			}
 		} catch (error) {
@@ -66,27 +59,27 @@ export class ProductsFiles{
 		}
 	};
 
-    async getProducts() {
+    async getProducts(){
 		try {
 			if (this.fileExists()) {
-				let content = await fs.promises.readFile(this.path, "utf-8");
-				let products = JSON.parse(content);
-
-				return products;
+				const content = await fs.promises.readFile(this.path, "utf-8");
+				const products = JSON.parse(content);
+				const arrayProducts = Object.values(products);
+				return arrayProducts;
 			} else {
 				return "El archivo no existe";
 			}
 		} catch (error) {
-			return "Error";
+			throw new error(error.message);
 		}
 	};
 
     async getProductById(id) {
 		try {
 			if (this.fileExists()) {
-				let content = await fs.promises.readFile(this.path, "utf-8");
-				let products = JSON.parse(content);
-				let product = products.find((item) => item.id === parseInt(id));
+				const content = await fs.promises.readFile(this.path, "utf-8");
+				const products = JSON.parse(content);
+				const product = products.find((item) => item.id === parseInt(id));
 				if (product) {
 					return product;
 				} else {
@@ -103,20 +96,15 @@ export class ProductsFiles{
     async updateProduct(id, product) {
 		try {
 			if (this.fileExists()) {
-				let content = await fs.promises.readFile(this.path, "utf-8");
-				let products = JSON.parse(content);
-				let productIndex = products.findIndex(
-					(item) => item.id === parseInt(id)
-				);
+				const content = await fs.promises.readFile(this.path, "utf-8");
+				const products = JSON.parse(content);
+				const productIndex = products.findIndex((item) => item.id === parseInt(id));
 				if (productIndex >= 0) {
 					products[productIndex] = {
 						...products[productIndex],
-						...product,
+						...product
 					};
-					await fs.promises.writeFile(
-						this.path,
-						JSON.stringify(products, null, 2)
-					);
+					await fs.promises.writeFile(this.path, JSON.stringify(products, null, 2));
 					return `El producto con el id ${id} fue modificado y actualizado`;
 				} else {
 					throw new Error(`El producto con el id ${id} no existe`);
@@ -129,21 +117,16 @@ export class ProductsFiles{
 		}
 	};
 
-    async deleteProduct(id) {
+    async deconsteProduct(id) {
 		try {
 			if (this.fileExists()) {
-				let content = await fs.promises.readFile(this.path, "utf-8");
-				let products = JSON.parse(content);
-				let productIndex = products.findIndex((item) => item.id === id);
-
+				const content = await fs.promises.readFile(this.path, "utf-8");
+				const products = JSON.parse(content);
+				const productIndex = products.findIndex((item) => item.id === id);
 				if (productIndex >= 0) {
 					products.splice(productIndex);
 				}
-
-				await fs.promises.writeFile(
-					this.path,
-					JSON.stringify(products, null, 2)
-				);
+				await fs.promises.writeFile(this.path, JSON.stringify(products, null, 2));
 				return `El elemento con ID ${id} ha sido eliminado del archivo ${this.path}.`;
 			} else {
 				throw new Error("El archivo no existe");
@@ -151,5 +134,6 @@ export class ProductsFiles{
 		} catch (error) {
 			throw new Error(error.message);
 		}
-	}
-};
+	};
+}
+export {ProductManager};

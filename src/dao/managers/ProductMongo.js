@@ -10,7 +10,7 @@ export class ProductsMongo{
             const result = await this.model.paginate(query, options);
             return result;
         } catch (error) {
-            throw new Error(`Error get all products ${error.message}`);
+            throw new Error(`Error al obtener productos ${error.message}`);
         }
     };
 
@@ -25,7 +25,7 @@ export class ProductsMongo{
 
     async getProducts(){
         try {
-            const data = await this.model.find();
+            const data = await this.model.find().lean();
             return data;
         } catch (error) {
             throw new Error(`Error al obtener productos ${error.message}`);
@@ -36,7 +36,7 @@ export class ProductsMongo{
         try {
             const data = await this.model.findById(id);
             if(!data){
-                throw new Error("el producto no existe")
+                throw new Error(`El producto con el id: ${id} no existe`);
             }
             return data;
         } catch (error) {
@@ -57,7 +57,7 @@ export class ProductsMongo{
         try {
             const data = await this.model.findByIdAndUpdate(id,product,{new:true});
             if(!data){
-                throw new Error("El producto no existe")
+                throw new Error(`El producto con el id: ${id} no existe`);
             }
             return data;
         } catch (error) {
@@ -68,9 +68,9 @@ export class ProductsMongo{
     async deleteProduct(id){
         try {
             await this.model.findByIdAndDelete(id);
-            return {message: "producto eliminado"};
+            return {message: `El producto con el id: ${id} fue eliminado`};
         } catch (error) {
             throw new Error(`Error al eliminar el producto ${error.message}`);
         }
     };
-}
+};
