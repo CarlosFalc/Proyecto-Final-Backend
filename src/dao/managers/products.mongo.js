@@ -1,34 +1,17 @@
-import { productsModel } from "../models/products.model.js";
+import { ProductsModel } from "../models/product.model.js";
 
-export class ProductsMongo{
-    constructor(){
-        this.model = productsModel;
-    };
-
-    async getPaginate(query={},options={}){
-        try {
-            const result = await this.model.paginate(query, options);
-            return result;
-        } catch (error) {
-            throw new Error(`Error al obtener productos ${error.message}`);
-        }
-    };
-
-    async create(product){
-        try {
-            const result = await this.model.create(product);
-            return result;
-        } catch (error) {
-            throw new Error(`Error create product ${error.message}`);
-        }
-    };
+class ProductsMongo{
+    constructor(model){
+        this.model = ProductsModel;
+    }
 
     async getProducts(){
         try {
-            const data = await this.model.find().lean();
-            return data;
+            const data = await this.model.find();
+            const response = JSON.parse(JSON.stringify(data));
+            return response;
         } catch (error) {
-            throw new Error(`Error al obtener productos ${error.message}`);
+            throw new Error(`Error get all ${error}`);
         }
     };
 
@@ -36,14 +19,13 @@ export class ProductsMongo{
         try {
             const data = await this.model.findById(id);
             if(!data){
-                throw new Error(`El producto con el id: ${id} no existe`);
+                throw new Error("el producto no existe")
             }
             return data;
         } catch (error) {
             throw new Error(`Error al obtener producto ${error.message}`);
         }
     };
-
     async createProduct(product){
         try {
             const data = await this.model.create(product);
@@ -57,7 +39,7 @@ export class ProductsMongo{
         try {
             const data = await this.model.findByIdAndUpdate(id,product,{new:true});
             if(!data){
-                throw new Error(`El producto con el id: ${id} no existe`);
+                throw new Error("el producto no existe")
             }
             return data;
         } catch (error) {
@@ -68,9 +50,20 @@ export class ProductsMongo{
     async deleteProduct(id){
         try {
             await this.model.findByIdAndDelete(id);
-            return {message: `El producto con el id: ${id} fue eliminado`};
+            return {message: "producto eliminado"};
         } catch (error) {
             throw new Error(`Error al eliminar el producto ${error.message}`);
         }
     };
-};
+
+    async getPaginate(query={},options={}){
+        try {
+            const result = await this.model.paginate(query, options);
+            return result;
+        } catch (error) {
+            throw new Error(`Error al obtener productos ${error.message}`);
+        }
+    };
+}
+
+export {ProductsMongo};

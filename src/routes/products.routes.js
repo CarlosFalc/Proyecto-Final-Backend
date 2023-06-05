@@ -1,20 +1,23 @@
 import {Router} from "express";
-import { ProductManager } from "../dao/managers/ProductManager.js";
-import { ProductsMongo } from "../dao/managers/ProductMongo.js";
+// import { ProductsFiles } from "../dao/managers/products.files.js";
+import { ProductsMongo } from "../dao/managers/products.mongo.js";
+// se importa el modelo de productos
+import { ProductsModel } from "../dao/models/product.model.js";
 
-//const productManager = new ProductsFiles();
-//const productManager = new ProductManager("products.json");
-
-const productManager = new ProductsMongo();
+//services
+const productsService = new ProductsMongo(ProductsModel);
 
 const router = Router();
 
 router.get("/", async(req,res)=>{
     try {
         const {limit=10,page=1,sort,category,stock} = req.query;
+        if(sort) {
         if(!["asc","desc"].includes(sort)){
             res.json({status:"error", message:"ordenamiento no valido, solo puede ser asc o desc"})
+            }
         };
+
         const sortValue = sort === "asc" ? 1 : -1;
         const stockValue = stock === 0 ? undefined : parseInt(stock);
         // console.log("limit: ", limit, "page: ", page, "sortValue: ", sortValue, "category: ", category, "stock: ", stock);
@@ -32,8 +35,8 @@ router.get("/", async(req,res)=>{
         }
         // console.log("query: ", query)
         const baseUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
-        //baseUrl: http://localhost:8080/api/products
-        const result = await productManager.getPaginate(query, {
+        // baseUrl: http://localhost:8080/api/products
+        const result = await productsService.getPaginate(query, {
             page,
             limit,
             sort:{price:sortValue},
@@ -58,69 +61,39 @@ router.get("/", async(req,res)=>{
         res.json({status:"error", message:error.message});
     }
 });
-
-
-router.get("/:pid",async(req, res)=>{
-    try {
-        const productId = req.params.pid
-        const gotProduct = await productManager.getProductById(productId);
-        res.json({status: "success", product: gotProduct});
-    } catch (error) {
-        res.status(400).json({status: "error", message: "No existe producto con este id"});
-    }
-});
-
-// endpoint para agregar el producto
+//ruta para agregar un producto
 router.post("/",async(req,res)=>{
     try {
-        const {title,description,code,price,status,stock,category} = req.body;
-        if(!title || !description || !code || !price || !status || !stock || !category){
-        return res.status(400).json({status:"error", message:"Los campos no son validos"})
-        }
-        const newProduct = req.body;
-        const products = await productManager.getProducts();
-        const matchCode = products.some(item=>item.code === code);
-        
-        if (matchCode) {
-            return res.status(400).json({status: "error", message: "Existe otro producto registrado con este código"});
-        } else {
-                
-        const productAdded = await productManager.addProduct(newProduct);
-        res.json({status: "success", product: productAdded});
-        console.log(productAdded);
-        }
+        const productCreated = await productsService.createProduct(req.body);
+        res.json({status:"success", data:productCreated});
     } catch (error) {
-        res.status(400).json({status: "error", message: error.message});
+        res.json({status:"error", message:error.message});
+    }
+})
+
+router.get("/:pid",async(req,res)=>{
+    try {
+        const {pid} = req.params;
+        const product = await productsService.getProductById(pid);
+        const {title, description, code, price, status, stock, category} = req.body;
+        if (!title || !description || !code || !price || !status || !stock || !category )
+        // console.log("product: ", product);
+        res.status(200).json({status:"success", result:product});
+    } catch (error) {
+        res.status(400).json({message:error.message});
     }
 });
 
-router.put("/:pid", async(req, res)=>{
+//ruta para eliminar el producto
+router.delete("/:pid",async(req,res)=>{
     try {
         const productId = req.params.pid;
-        const {title, description, code, price, status, stock, category} = req.body;
-        if (!title || !description || !code || !price || !status || !stock || !category ) {
-            return res.status(400).json({status: "error", message: "Cada campo debe ser llenado"})
-        }
-        
-        const newData = req.body;   
-        const updatedProduct = await productManager.updateProducts(productId, newData);
-        res.json({status: "success", message: "Producto actualizado", product: updatedProduct});
-        
-
+        //luego eliminamos el producto
+        const productdeleted = await productsService.deleteProduct(productId);
+        res.json({status:"success", result:productdeleted.message});
     } catch (error) {
-        res.status(400).json({status: "error", message: "No existe producto con este id"});
+        res.status(400).json({message:error});
     }
 });
 
-router.delete("/:pid",async(req, res)=>{
-    try {
-        const productId = req.params.pid
-        const productList = await productManager.deleteProducts(productId);
-        res.json({status: "success", message: "Producto eliminado", product: productList});
-
-    } catch (error) {
-        res.status(400).json({status: "error", message: "No existe producto con este id"});
-    }
-});
-
-export{router as productRouter};
+export {router as productsRouter};

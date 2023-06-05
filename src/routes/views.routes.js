@@ -1,44 +1,43 @@
-import { Router } from "express";
-import { ProductManager } from "../dao/managers/ProductManager.js";
-import { ProductsMongo } from "../dao/managers/ProductMongo.js";
-import { CartsMongo } from "../dao/managers/CartMongo.js";
-
-const productManager = new ProductsMongo();
-const cartManager = new CartsMongo();
+import {Router} from "express";
+import { ProductsMongo } from "../dao/managers/products.mongo.js";
+import { ProductsModel } from "../dao/models/product.model.js";
+import { CartsMongo } from "../dao/managers/carts.mongo.js";
+import { CartModel } from "../dao/models/carts.model.js";
 
 const router = Router();
 
-router.get("/", async(req,res)=>{
-    try {
-        const products = await productManager.getProducts();
-        
-        res.render("home", {products: products});
-    } catch (error) {
-        res.status(400).json({status: "error", message: error.message});
-    }   
+const productsService = new ProductsMongo(ProductsModel);
+const cartsService = new CartsMongo(CartModel);
+
+
+//rutas de las vistas
+router.get("/", (req,res)=>{
+    res.render("home", {products: products});
 });
 
-router.get("/realTimeProducts", async(req, res) => {
-    try {
-        const products = await productManager.getProducts();
-    	res.render("realTimeProducts", {products: products});
-    	} catch (error) {
-    		res.status(400).json({ status: "error", message: error.message});
-    	}
+router.get("/login", (req,res)=>{
+    res.render("login");
 });
 
+router.get("/signup", (req,res)=>{
+    res.render("registro");
+});
 
-router.get("/chat", async(req, res) => {
-    try {
-        res.render("chat");
-        } catch (error) {
-            res.status(400).json({status: "error", message: error.message});
-        }
+router.get("/profile", (req,res)=>{
+    console.log(req.session.user)
+    res.render("perfil",{email:req.session.user.email});
+});
+
+router.get("/",(req,res)=>{
+    return res.render("chat");
+});
+router.get("/",(req,res)=>{
+    return res.render("cartInfo");
 });
 
 router.get("/products",async(req,res)=>{
     try {
-        const {limit=2,page=1,sort="asc",category,stock} = req.query;
+        const {limit=3,page=1,sort="asc",category,stock} = req.query;
         if(!["asc","desc"].includes(sort)){
             return res.json({status:"error", message:"ordenamiento no valido, solo puede ser asc o desc"})
         };
@@ -61,7 +60,7 @@ router.get("/products",async(req,res)=>{
         const baseUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
         console.log("baseUrl", baseUrl);
         //baseUrl: http://localhost:8080/api/products
-        const result = await productManager.getPaginate(query, {
+        const result = await productsService.getPaginate(query, {
             page,
             limit,
             sort:{price:sortValue},
@@ -84,21 +83,45 @@ router.get("/products",async(req,res)=>{
         console.log("response: ", response);
         res.render("products",response);
     } catch (error) {
-        res.status(400).json({status:"error", message:error.message});
+        res.json({status:"error", message:error.message});
     }
-    
+    res.render("products");
+});
+
+router.get("/products/:pid",async(req,res)=>{
+    try {
+        const productId = req.params.pid;
+        const product = await productsService.getProductById(productId);
+        // console.log("product: ", product);
+        res.render("productInfo", product);
+    } catch (error) {
+        // console.log(error.message);
+        res.send(`<div>Hubo un error al cargar esta vista</div>`);
+    }
 });
 
 router.get("/cart/:cid",async(req,res)=>{
     try {
         const cartId = req.params.cid;
-        const cart = await cartManager.getCartById(cartId);
-        res.render("cartFullInfo", cart);
-        console.log(cart);
+        const cart = await cartsService.getCartById(cartId);
+        // console.log("cart:", cart)
+        res.render("cartInfo",cart);
     } catch (error) {
-       
-        res.send(`<div>error al cargar esta vista</div>`);
+        // console.log(error.message);
+        res.send(`<div>Hubo un error al cargar esta vista</div>`);
     }
 });
 
-export {router as viewsRouter};
+// //ruta para obtener Cart e informacion de products
+// app.get("/cart/:cid", async(req,res)=>{
+//     try {
+//         const cartId = req.params.cid;
+//         //populate("nombre_de_la_propiedad_a_popular")
+//         const cart = await CartModel.findById(cartId).populate('products');
+//         res.render(cart);
+//     } catch (error) {
+//         res.send(error.message)
+//     }
+// });
+
+export {router as viewsRouter}

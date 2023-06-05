@@ -4,13 +4,13 @@ import handlebars from "express-handlebars";
 import { __dirname } from "./utils.js";
 import path from "path";
 import { viewsRouter } from "./routes/views.routes.js";
-import { ProductManager } from "./dao/managers/ProductManager.js";
-import { productRouter } from "./routes/products.routes.js";
-import { cartRouter } from "./routes/carts.routes.js";
+// import { ProductManager } from "./dao/managers/Product.Manager.js";
+import { productsRouter } from "./routes/products.routes.js";
+import { cartsRouter } from "./routes/carts.routes.js";
 import { connectDB } from "./config/dbConnection.js";
 import { ChatMongo } from "./dao/managers/chat.mongo.js";
 
-const productManager = new ProductManager("products.json");
+//const productManager = new ProductManager("products.json");
 
 //configuración del servidor express (http)
 const app = express();
@@ -26,8 +26,8 @@ connectDB();
 
 //routes
 app.use(viewsRouter);
-app.use("/api/products",productRouter);
-app.use("/api/carts",cartRouter);
+app.use("/api/products",productsRouter);
+app.use("/api/carts",cartsRouter);
 app.use("/realTimeProducts", viewsRouter);
 
 //servidor http
