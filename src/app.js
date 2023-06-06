@@ -1,9 +1,12 @@
 import express from "express";
 import { Server } from "socket.io";
 import handlebars from "express-handlebars";
+import session from "express-session";
+//import MongoStore from "connect-mongo";
 import { __dirname } from "./utils.js";
 import path from "path";
 import { viewsRouter } from "./routes/views.routes.js";
+import { authRouter } from "./routes/auth.routes.js";
 // import { ProductManager } from "./dao/managers/Product.Manager.js";
 import { productsRouter } from "./routes/products.routes.js";
 import { cartsRouter } from "./routes/carts.routes.js";
@@ -24,11 +27,21 @@ app.use(express.static(path.join(__dirname,"/public")));
 //Conexión a la base de datos
 connectDB();
 
+app.use(session({
+    store: MongoStore.create({
+        mongoUrl: "mongodb+srv://ajlinaresrobles:Ale120384.@cluster0.wqwvedx.mongodb.net/desafioSesionesDB?retryWrites=true&w=majority"
+    }),
+    secret: "claveSecreta",
+    resave: true,
+    saveUninitialized: true
+}));
+
 //routes
 app.use(viewsRouter);
 app.use("/api/products",productsRouter);
 app.use("/api/carts",cartsRouter);
 app.use("/realTimeProducts", viewsRouter);
+app.use("/api/sessions", authRouter);
 
 //servidor http
 const httpServer = app.listen(port,()=>

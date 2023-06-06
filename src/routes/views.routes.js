@@ -12,7 +12,7 @@ const cartsService = new CartsMongo(CartModel);
 
 //rutas de las vistas
 router.get("/", (req,res)=>{
-    res.render("home", {products: products});
+    res.render("home");
 });
 
 router.get("/login", (req,res)=>{
