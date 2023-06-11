@@ -1,43 +1,21 @@
 import {Router} from "express";
-// import { CartFiles } from "../dao/managers/carts.Files.js";
-// import { ProductsFiles } from "../dao/managers/products.files.js";
 import { CartsMongo } from "../dao/managers/carts.mongo.js";
-import { ProductsMongo } from "../dao/managers/products.mongo.js";
-import { CartModel } from "../dao/models/carts.model.js";
-import { ProductsModel } from "../dao/models/product.model.js";
-
-// const cartsService = new CartFiles("carts.json");
-// const productsService = new ProductsFiles('products.json');
-const cartsService = new CartsMongo(CartModel);
-const productsService = new ProductsMongo(ProductsModel);
+// import { ProductsMongo } from "../dao/managers/products.mongo.js";
+// import { CartModel } from "../dao/models/carts.model.js";
+// import { ProductsModel } from "../dao/models/product.model.js";
 
 const router = Router();
+const cartsService = new CartsMongo();
+//const productsService = new ProductsMongo(ProductsModel);
 
-
-//agregar carrito
+//Agregar carrito
 router.post("/",async(req,res)=>{
     try {
-        const cartAdded = await cartsService.addCart();
-        res.json({status:"success", result:cartAdded, message:"Carrito Agregado"});
+        const cartAdded = await cartsService.create();
+        res.json({status:"success", data:cartAdded, message:"Carrito Agregado"});
         console.log(cartAdded);
     } catch (error) {
         res.status(400).json({status:"error", error:error.message});
-    }
-});
-
-//ruta para listar todos los productos de un carrito
-router.get("/:cid",async(req,res)=>{
-    try {
-        const cartId = req.params.cid;
-        //obtenemos el carrito
-        const cart = await cartsService.getCartById(cartId);
-        if (cart) {
-            res.json({status:"success", result:cart});
-        } else {
-            res.status(400).json({status: "error", message: "Este carrito no existe"})
-        }
-    } catch (error) {
-        res.status(400).json({status:"error", message:error.message});
     }
 });
 
@@ -62,6 +40,30 @@ router.put("/:cid/product/:pid",async(req,res)=>{
         }
     } catch (error) {
         res.status(400).json({status:"error", menssage: error.message});
+    }
+});
+
+//ruta para listar todos los productos de un carrito
+router.put("/:cid/:pid",async(req,res)=>{
+    try {
+        const cartId = req.params.cid;
+        const productId = req.params.pid;
+        const cart = await cartsService.get(cartId);
+        // verificar que el producto exista antes de agregarlo al carrito.
+        const result = await cartsService.addProduct(cartId,productId);
+        res.json({status:"success", data:result});
+    } catch (error) {
+        res.json({status:"error", message:error.message});
+    }
+});
+
+router.get("/:cid",async(req,res)=>{
+    try {
+        const cartId = req.params.cid;
+        const cart = await cartsService.get(cartId);
+        res.json({status:"success", data:cart});
+    } catch (error) {
+        res.json({status:"error", message:error.message});
     }
 });
 

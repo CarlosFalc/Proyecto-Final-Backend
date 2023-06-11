@@ -1,13 +1,13 @@
 import {Router} from "express";
 import { ProductsMongo } from "../dao/managers/products.mongo.js";
-import { ProductsModel } from "../dao/models/product.model.js";
+//import { ProductsModel } from "../dao/models/product.model.js";
 import { CartsMongo } from "../dao/managers/carts.mongo.js";
-import { CartModel } from "../dao/models/carts.model.js";
+//import { CartModel } from "../dao/models/carts.model.js";
+
+const productsService = new ProductsMongo();
+const cartsService = new CartsMongo();
 
 const router = Router();
-
-const productsService = new ProductsMongo(ProductsModel);
-const cartsService = new CartsMongo(CartModel);
 
 
 //rutas de las vistas
@@ -19,14 +19,14 @@ router.get("/login", (req,res)=>{
     res.render("login");
 });
 
-router.get("/signup", (req,res)=>{
-    res.render("registro");
+router.get("/register", (req,res)=>{
+    res.render("register");
 });
 
-router.get("/profile", (req,res)=>{
-    console.log(req.session.user)
-    res.render("perfil",{email:req.session.user.email});
-});
+// router.get("/products", (req,res)=>{
+//     console.log(req.session.user)
+//     res.render("products",{email:req.session.user.email});
+// });
 
 router.get("/",(req,res)=>{
     return res.render("chat");
@@ -103,12 +103,12 @@ router.get("/products/:pid",async(req,res)=>{
 router.get("/cart/:cid",async(req,res)=>{
     try {
         const cartId = req.params.cid;
-        const cart = await cartsService.getCartById(cartId);
-        // console.log("cart:", cart)
-        res.render("cartInfo",cart);
+        const cart = await cartsService.get(cartId);
+        console.log(cart);
+        res.render("cart",cart);
     } catch (error) {
         // console.log(error.message);
-        res.send(`<div>Hubo un error al cargar esta vista</div>`);
+        res.json({status:"error", message:error.message});
     }
 });
 

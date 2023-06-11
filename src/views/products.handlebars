@@ -1,4 +1,6 @@
 <h2>Página de productos</h2>
+
+<p>Bienvenido {{email}}</p>
 <br/>
 {{#if totalDocs}}
     <div>
@@ -11,19 +13,23 @@
         {{/each}}
         </ul>
     </div>
+   <div>
+    <a href="/api/sessions/logout">Cerrar Sesión</a>
+   </div>   
+    <br/>
     <div>
         {{#if hasPrevPage}}
-            <a href={{prevLink}}>Página Anterior</a>
+            <a href={{prevLink}}>Anterior</a>
         {{/if}}
 
         {{page}}
 
         {{#if hasNextPage}}
-            <a href={{nextLink}}>PáginaSiguiente</a>
+            <a href={{nextLink}}>Siguiente</a>
         {{/if}}
     </div>
 {{else}}
     <p>No hay productos</p>
 {{/if}}
 
-<script src="../public/js/products.js"></script>
+<script src="js/products.js"></script>

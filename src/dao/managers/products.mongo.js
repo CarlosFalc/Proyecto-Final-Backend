@@ -1,9 +1,27 @@
 import { ProductsModel } from "../models/product.model.js";
 
 class ProductsMongo{
-    constructor(model){
+    constructor(){
         this.model = ProductsModel;
     }
+
+    async getPaginate(query={},options={}){
+        try {
+            const result = await this.model.paginate(query, options);
+            return result;
+        } catch (error) {
+            throw new Error(`Error al obtener productos ${error.message}`);
+        }
+    };
+
+    async createProduct(product){
+        try {
+            const data = await this.model.create(product);
+            return data;
+        } catch (error) {
+            throw new Error(`Error al crear el producto ${error.message}`);
+        }
+    };
 
     async getProducts(){
         try {
@@ -26,15 +44,7 @@ class ProductsMongo{
             throw new Error(`Error al obtener producto ${error.message}`);
         }
     };
-    async createProduct(product){
-        try {
-            const data = await this.model.create(product);
-            return data;
-        } catch (error) {
-            throw new Error(`Error al crear el producto ${error.message}`);
-        }
-    };
-
+    
     async updateProduct(id,product){
         try {
             const data = await this.model.findByIdAndUpdate(id,product,{new:true});
@@ -55,15 +65,5 @@ class ProductsMongo{
             throw new Error(`Error al eliminar el producto ${error.message}`);
         }
     };
-
-    async getPaginate(query={},options={}){
-        try {
-            const result = await this.model.paginate(query, options);
-            return result;
-        } catch (error) {
-            throw new Error(`Error al obtener productos ${error.message}`);
-        }
-    };
 }
-
 export {ProductsMongo};

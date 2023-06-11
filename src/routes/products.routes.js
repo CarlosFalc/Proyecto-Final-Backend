@@ -2,22 +2,19 @@ import {Router} from "express";
 // import { ProductsFiles } from "../dao/managers/products.files.js";
 import { ProductsMongo } from "../dao/managers/products.mongo.js";
 // se importa el modelo de productos
-import { ProductsModel } from "../dao/models/product.model.js";
+//import { ProductsModel } from "../dao/models/product.model.js";
 
 //services
-const productsService = new ProductsMongo(ProductsModel);
-
 const router = Router();
+const productsService = new ProductsMongo();
+
 
 router.get("/", async(req,res)=>{
     try {
         const {limit=10,page=1,sort,category,stock} = req.query;
-        if(sort) {
         if(!["asc","desc"].includes(sort)){
             res.json({status:"error", message:"ordenamiento no valido, solo puede ser asc o desc"})
-            }
         };
-
         const sortValue = sort === "asc" ? 1 : -1;
         const stockValue = stock === 0 ? undefined : parseInt(stock);
         // console.log("limit: ", limit, "page: ", page, "sortValue: ", sortValue, "category: ", category, "stock: ", stock);
@@ -35,7 +32,7 @@ router.get("/", async(req,res)=>{
         }
         // console.log("query: ", query)
         const baseUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
-        // baseUrl: http://localhost:8080/api/products
+        //baseUrl: http://localhost:8080/api/products
         const result = await productsService.getPaginate(query, {
             page,
             limit,
@@ -61,15 +58,16 @@ router.get("/", async(req,res)=>{
         res.json({status:"error", message:error.message});
     }
 });
+
 //ruta para agregar un producto
 router.post("/",async(req,res)=>{
     try {
-        const productCreated = await productsService.createProduct(req.body);
+        const productCreated = await productsService.create(req.body);
         res.json({status:"success", data:productCreated});
     } catch (error) {
         res.json({status:"error", message:error.message});
     }
-})
+});
 
 router.get("/:pid",async(req,res)=>{
     try {

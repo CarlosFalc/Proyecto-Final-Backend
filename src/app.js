@@ -1,16 +1,17 @@
 import express from "express";
-import { Server } from "socket.io";
-import handlebars from "express-handlebars";
-import session from "express-session";
-//import MongoStore from "connect-mongo";
-import { __dirname } from "./utils.js";
+import { engine } from "express-handlebars";
 import path from "path";
+import { __dirname } from "./utils.js";
+import { connectDB } from "./config/dbConnection.js";
 import { viewsRouter } from "./routes/views.routes.js";
-import { authRouter } from "./routes/auth.routes.js";
-// import { ProductManager } from "./dao/managers/Product.Manager.js";
 import { productsRouter } from "./routes/products.routes.js";
 import { cartsRouter } from "./routes/carts.routes.js";
-import { connectDB } from "./config/dbConnection.js";
+import { Server } from "socket.io";
+import handlebars from "express-handlebars";
+import { options } from "./config/options.js";
+// import session from "express-session";
+import { authRouter } from "./routes/auth.routes.js";
+// import { ProductManager } from "./dao/managers/Product.Manager.js";
 import { ChatMongo } from "./dao/managers/chat.mongo.js";
 
 //const productManager = new ProductManager("products.json");
@@ -26,15 +27,6 @@ app.use(express.static(path.join(__dirname,"/public")));
 
 //Conexión a la base de datos
 connectDB();
-
-app.use(session({
-    store: MongoStore.create({
-        mongoUrl: "mongodb+srv://ajlinaresrobles:Ale120384.@cluster0.wqwvedx.mongodb.net/desafioSesionesDB?retryWrites=true&w=majority"
-    }),
-    secret: "claveSecreta",
-    resave: true,
-    saveUninitialized: true
-}));
 
 //routes
 app.use(viewsRouter);
