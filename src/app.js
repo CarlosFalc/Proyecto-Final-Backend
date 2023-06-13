@@ -1,5 +1,7 @@
 import express from "express";
 import { engine } from "express-handlebars";
+import session from "express-session";
+import MongoStore from "connect-mongo";
 import path from "path";
 import { __dirname } from "./utils.js";
 import { connectDB } from "./config/dbConnection.js";
@@ -11,6 +13,8 @@ import handlebars from "express-handlebars";
 import { options } from "./config/options.js";
 // import session from "express-session";
 import { authRouter } from "./routes/auth.routes.js";
+import passport from "passport";
+import { initializePassport } from "./config/passport.config.js";
 // import { ProductManager } from "./dao/managers/Product.Manager.js";
 import { ChatMongo } from "./dao/managers/chat.mongo.js";
 
@@ -27,6 +31,21 @@ app.use(express.static(path.join(__dirname,"/public")));
 
 //Conexión a la base de datos
 connectDB();
+
+//Configuración de session
+app.use(session({
+    store: MongoStore.create({
+        mongoUrl: "mongodb+srv://cefalcon:4wzrc.74@cluster0.1i7dsas.mongodb.net/ecommerce?retryWrites=true&w=majority"
+    }),
+    secret: "claveSecreta",
+    resave: true,
+    saveUninitialized: true
+}));
+
+//Configuración de passport
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
 //routes
 app.use(viewsRouter);
