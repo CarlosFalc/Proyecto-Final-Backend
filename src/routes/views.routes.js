@@ -23,10 +23,10 @@ router.get("/register", (req,res)=>{
     res.render("register");
 });
 
-// router.get("/products", (req,res)=>{
-//     console.log(req.session.user)
-//     res.render("products",{email:req.session.user.email});
-// });
+router.get("/products", (req,res)=>{
+    console.log(req.session.user)
+    res.render("products",{email:req.session.user.email});
+});
 
 router.get("/",(req,res)=>{
     return res.render("chat");
