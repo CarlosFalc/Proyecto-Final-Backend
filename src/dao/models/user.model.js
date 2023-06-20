@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
     email: {type: String, required: true, unique: true},
     age: {type: Number, required: false},
     password: {type: String, required: true},
-    role: {type: String, enum:["user", "admin"], default: "user"},
+    cart:{type: mongoose.Schema.Types.ObjectId, ref: "carts"},
+    role: {type: String, enum:["user", "admin"], default: "user", required: true}
 });
 
 export const userModel = mongoose.model(userCollection,userSchema);

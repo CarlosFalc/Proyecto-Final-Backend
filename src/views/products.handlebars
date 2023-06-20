@@ -13,10 +13,7 @@
         {{/each}}
         </ul>
     </div>
-   <div>
-    <a href="/api/sessions/logout">Cerrar Sesión</a>
-   </div>   
-    <br/>
+   
     <div>
         {{#if hasPrevPage}}
             <a href={{prevLink}}>Anterior</a>
@@ -31,5 +28,11 @@
 {{else}}
     <p>No hay productos</p>
 {{/if}}
+
+<br></br>
+
+<div>
+    <a href="/api/sessions/logout">Cerrar Sesión</a>
+    </div>   
 
 <script src="js/products.js"></script>

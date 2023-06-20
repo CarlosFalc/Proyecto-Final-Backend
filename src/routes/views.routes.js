@@ -23,6 +23,11 @@ router.get("/register", (req,res)=>{
     res.render("register");
 });
 
+// router.get("/current",(req,res)=>{
+//     console.log(req.user);
+//     res.render("profile",{user:req.user});
+// });
+
 // router.get("/products", (req,res)=>{
 //     console.log(req.session.user)
 //     res.render("products",{email:req.session.user.email});

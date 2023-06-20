@@ -82,28 +82,7 @@ class CartsMongo{
         }
     };
 
-    // async addProductToCart(cartId,productId){
-    //     try {
-    //         const cart = await this.getCartById(cartId);
-    //         const productIndex = cart.products.findIndex(prod=>prod.id==productId);
-    //         if(productIndex>=0){
-    //             cart.products[productIndex].quantity = cart.products[productIndex].quantity+1;
-    //         } else {
-    //             cart.products.push({
-    //                 _id: productId,
-    //                 quantity: 1
-    //             });
-    //         };
-    //         const data = await this.model.findByIdAndUpdate(cartId, cart,{new:true});
-    //         const dataPopule = await this.model.findById({_id:cartId}).populate("products");
-    //         // return data;
-    //         // const response = JSON.parse(JSON.stringify(data));
-    //         return dataPopule;
-    //     } catch (error) {
-    //         throw new Error(error.message);
-    //     }
-    // };
-
+    
     async deleteProduct(cartId,productId){
         try {
             const cart = await this.getCartById(cartId);
@@ -121,6 +100,7 @@ class CartsMongo{
         }
         
     };
+    
 
     async updateCart(id, cart){
         try {

@@ -97,6 +97,10 @@ router.get("/logout",(req, res)=>{
     })   
 });
 
+router.get("/current", (req, res)=>{
+    res.render("current", {user: JSON.parse(JSON.stringify(req.user))});
+});
+
 //Ruta login con github
 router.get("/github",passport.authenticate("githubLogin"));
 

@@ -8,8 +8,8 @@ import { createHash, isValidPassword } from "../utils.js";
 export const initializePassport = ()=>{
     passport.use("registerStrategy", new localStrategy(
         {
-            usernameField: "email",
-            passReqToCallback: true
+            passReqToCallback: true,
+            usernameField: "email"            
         },
         async(req, username, password, done)=>{
             try {
@@ -39,7 +39,7 @@ export const initializePassport = ()=>{
             } catch (error) {
                 return done(error);
             }
-
+            
         }
     ));
 
@@ -56,7 +56,7 @@ export const initializePassport = ()=>{
                 if (userDB) {
                     
                     if (isValidPassword(password, userDB)) {
-                        return done(null, userDB);
+                        return done(null, JSON.parse(JSON.stringify(userDB)));
                     } else{
                         return done(null,false);
                     }
