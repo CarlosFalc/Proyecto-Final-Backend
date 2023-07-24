@@ -10,13 +10,13 @@ import { productsRouter } from "./routes/products.routes.js";
 import { cartsRouter } from "./routes/carts.routes.js";
 import { Server } from "socket.io";
 import handlebars from "express-handlebars";
-import { options } from "./config/options.js";
-// import session from "express-session";
+//import { options } from "./config/options.js";
 import { authRouter } from "./routes/auth.routes.js";
 import passport from "passport";
 import { initializePassport } from "./config/passport.config.js";
 // import { ProductManager } from "./dao/managers/Product.Manager.js";
 import { ChatMongo } from "./dao/managers/chat.mongo.js";
+import { config } from "./config/config.js";
 
 //const productManager = new ProductManager("products.json");
 
@@ -35,9 +35,9 @@ connectDB();
 //Configuración de session
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: "mongodb+srv://cefalcon:4wzrc.74@cluster0.1i7dsas.mongodb.net/ecommerce?retryWrites=true&w=majority"
+        mongoUrl: config.mongo.mongoUrl
     }),
-    secret: "claveSecreta",
+    secret: config.server.secretSession,
     resave: true,
     saveUninitialized: true
 }));

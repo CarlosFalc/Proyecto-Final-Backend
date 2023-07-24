@@ -1,11 +1,11 @@
 import passport from "passport";
 import localStrategy from "passport-local";
-import githubStrategy from "passport-github2";
 import { userModel } from "../dao/models/user.model.js";
 import { createHash, isValidPassword } from "../utils.js";
 
 
 export const initializePassport = ()=>{
+    //Estrategia del registro
     passport.use("registerStrategy", new localStrategy(
         {
             passReqToCallback: true,
@@ -14,7 +14,12 @@ export const initializePassport = ()=>{
         async(req, username, password, done)=>{
             try {
                 const userRegisterForm = req.body;
-                const user = await userModel.findOne({email:username});
+                const validEmail =  /^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/;
+
+	            if( !validEmail.test(userRegisterForm.email) ){
+		        return done(null, false);
+                }else{
+                    const user = await userModel.findOne({email:username});
 
                 if (!user) {
 
@@ -35,11 +40,10 @@ export const initializePassport = ()=>{
                 }else{
                     return done(null, false);
                 }
-
+            }
             } catch (error) {
                 return done(error);
-            }
-            
+            }            
         }
     ));
 
@@ -64,53 +68,11 @@ export const initializePassport = ()=>{
                 } else {
                     return done(null, false);
                 }
-    
-    
-            } catch (error) {
+                } catch (error) {
                 return done(error);
-            }
-    
-        }
-    ));
-
-
-//Estrategia de inicio de sesión de Github
-passport.use("githubLogin", new githubStrategy(
-    {
-        clientID:"Iv1.33b5d0e78518f5a6",
-        clientSecret:"c0e139774a432bc210cf0d800bb3f368b9f6b599",
-        callbackUrl:"http://localhost:8080/api/sessions/github-callback"
-    },
-    async(accesstoken, refreshtoken, profile, done)=>{
-            try {
-               console.log("profile: ", profile); 
-
-               const user = await userModel.findOne({email:profile.username});
-               
-               if(!user){
-
-                    const newUser = {
-                        first_name: profile.username,
-                        last_name:"",
-                        age: null,
-                        email: profile.username,
-                        password: createHash(profile.id)
-                    }
-                    const userCreated = await userModel.create(newUser);
-
-                    return done (null, userCreated);
-
-
-               }else{
-                return done(null, false);
-               }
-
-            } catch (error) {
-                return done(error);
-            }
-    }
+                }
+             }
 ));
-
 
 //Serialización y deserialización
     passport.serializeUser((user, done)=>{

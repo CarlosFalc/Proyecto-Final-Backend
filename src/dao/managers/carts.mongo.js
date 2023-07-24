@@ -7,14 +7,28 @@ class CartsMongo{
         this.model = CartModel;
     };
 
-
     async create(){
-        const cart = {};
         try {
-            const result = await this.model.create(cart);
-            return result;
+            const cart = {
+                products:[]
+            }
+            const data = await this.model.create(cart);
+            const response = JSON.parse(JSON.stringify(data));
+            return response;
         } catch (error) {
-            throw new Error(`Error create cart ${error.message}`);
+            throw new Error(`Error al crear el carrito ${error.message}`);
+        }
+    };
+
+    async getCartById(id){
+        try {
+            const data = await this.model.findById(id);
+            if (!data) {
+                throw new Error(`Este carrito no existe`);
+            }
+            return data
+        } catch (error) {
+            throw new Error(`Error al obtener carrito ${error.message}`);
         }
     };
 
@@ -34,49 +48,16 @@ class CartsMongo{
 
     async addProduct(cartId,productId){
         try {
-            const cart = await this.get(cartId);
-            cart.products.push({productId:productId, quantity:1});
-            // console.log("cart", cart);
-            const result = await this.model.findByIdAndUpdate(cartId,cart,{new:true});
-            return result;
-        } catch (error) {
-            throw new Error(`Error create cart ${error.message}`);
-        }
-    };
-
-    async addCart(){
-        try {
-            const cart={
-                products: []
+            const cart = await this.getCartById(cartId);
+            const productIndex = cart.products.findIndex(element=>element.id===productId);
+            if(productIndex>=0){
+                cart.products[productIndex].quantity = cart.products[productIndex].quantity+1;
+            } else {
+                cart.products.push({_id: productId, quantity: 1});
             };
-            const data = await this.model.create(cart);
-            // const response = JSON.parse(JSON.stringify(data));
-            return data;
-        } catch (error) {
-            throw new Error(`Error al crear el carrito: ${error.message}`);
-        }
-    };
-
-    async getCarts(){
-        try {
-            const data = await this.model.find();
+            const data = await this.model.findByIdAndUpdate(cartId, cart,{new:true});
             const response = JSON.parse(JSON.stringify(data));
-            return data;
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    };
-
-    
-    async getCartById(id){
-        try {           
-            const data = await this.model.findById(id);
-            // console.log("data: ", data);
-            if(!data){
-                // const response = JSON.parse(JSON.stringify(data));
-                throw new Error(`El Carrito con ID: ${id} no existe ${error.message}`);
-                }
-            return data;
+            return response;
         } catch (error) {
             throw new Error(error.message);
         }
