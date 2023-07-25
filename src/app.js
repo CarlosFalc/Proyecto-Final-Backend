@@ -17,6 +17,7 @@ import { initializePassport } from "./config/passport.config.js";
 // import { ProductManager } from "./dao/managers/Product.Manager.js";
 import { ChatMongo } from "./dao/managers/chat.mongo.js";
 import { config } from "./config/config.js";
+import { mockRouter } from "./routes/mock.routes.js";
 
 //const productManager = new ProductManager("products.json");
 
@@ -51,8 +52,9 @@ app.use(passport.session());
 app.use(viewsRouter);
 app.use("/api/products",productsRouter);
 app.use("/api/carts",cartsRouter);
-app.use("/realTimeProducts", viewsRouter);
+//app.use("/realTimeProducts", viewsRouter);
 app.use("/api/sessions", authRouter);
+app.use("/api/mockingproducts", mockRouter);
 
 //servidor http
 const httpServer = app.listen(port,()=>
