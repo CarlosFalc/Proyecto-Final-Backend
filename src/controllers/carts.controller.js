@@ -1,7 +1,7 @@
 import { CartsMongo } from "../dao/managers/carts.mongo.js";
 import { ProductsMongo } from "../dao/managers/products.mongo.js";
-import { CartModel } from "../dao/models/carts.model.js";
-import { ProductsModel } from "../dao/models/product.model.js";
+//import { CartModel } from "../dao/models/carts.model.js";
+//import { ProductsModel } from "../dao/models/product.model.js";
 import { TicketMongo } from "../dao/managers/ticketManagerMongo.js"
 import { v4 as uuidv4 } from "uuid";
 
@@ -13,8 +13,8 @@ let myuuid = uuidv4();
 
 export const addCart = async(req,res)=>{
     try {
-        const cartAdded = await cartsService.create();
-        res.json({status:"success", data:cartAdded, message:"Carrito Agregado"});
+        const cartAdded = await cartsService.addCart();
+        res.json({status: "success", cart: cartAdded});
         console.log(cartAdded);
     } catch (error) {
         res.status(400).json({status:"error", error:error.message});
@@ -24,7 +24,7 @@ export const addCart = async(req,res)=>{
 export const getCarts = async(req,res)=>{
     try {
         const cartId = req.params.cid;
-        const cart = await cartsService.get(cartId);
+        const cart = await cartsService.getCarts(cartId);
         if (cart) {
         res.json({status:"success", cart:cart});
         console.log(cart);
@@ -132,32 +132,30 @@ export const purchaseControl = async(req,res)=>{
         let totalAmount = 0
         let cart = await cartsService.getCartById(cartId);
         if (!cart){
-            res.status(400).json({status: "error", message: "this cart does not exist"});
+            res.status(400).json({status: "error", message: "Este carrito no existe"});
         }   
         if(cart.products.length == 0){
-            res.status(400).json({status: "error", message: "this cart does not have products"});  
+            res.status(400).json({status: "error", message: "Este carrito no tiene productos"});  
         }else{
             console.log(cart);
        for (let i = 0; i < cart.products.length; i++) {
-       
-        let productIdCart = cart.products[i]._id;
-       
-        let productDB = await productsService.getProductById(productIdCart);
-        let dif = parseInt(productDB.stock) - cart.products[i].quantity;
+            let productIdCart = cart.products[i].productId._id;
+
+            let productDB = await productsService.getProductById(productIdCart);
+            let dif = parseInt(productDB.stock) - cart.products[i].quantity;
         
-            if (dif >= 0) {
-                
+            if (dif >= 0) {                
                 approvedProductPurchase.push(cart.products[i]);
                 totalAmount += cart.products[i].quantity * productDB.price;
                 productDB.stock = dif;
-                await productsService.updateProducts(cart.products[i]._id, productDB);
-                await cartsService.deleteProduct(cartId, cart.products[i]._id);
+                await productsService.updateProduct(cart.products[i].productId._id, productDB);
+                await cartsService.deleteProduct(cartId, cart.products[i].productId._id);
 
              }else{
                
                 rejectedProductPurchase.push(cart.products[i]);
-             };
-       };
+             }
+       }
        console.log("aprobados: ", approvedProductPurchase);
 
        console.log("rechazados: ", rejectedProductPurchase);

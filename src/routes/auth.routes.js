@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { userModel } from "../dao/models/user.model.js";
-import { createHash } from "../utils.js";
-import { isValidPassword } from "../utils.js";
+// import { userModel } from "../dao/models/user.model.js";
+// import { createHash } from "../utils.js";
+// import { isValidPassword } from "../utils.js";
 import passport from "passport";
 
 

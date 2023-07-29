@@ -7,7 +7,7 @@ class CartsMongo{
         this.model = CartModel;
     };
 
-    async create(){
+    async addCart(){
         try {
             const cart = {
                 products:[]
@@ -67,9 +67,11 @@ class CartsMongo{
     async deleteProduct(cartId,productId){
         try {
             const cart = await this.getCartById(cartId);
-            const productIndex = cart.products.findIndex(prod=>prod.id._id===productId);
+            const productIndex = cart.products.findIndex(
+                (prod) => prod._id.toString() === productId.toString());
             if(productIndex>=0){
-                const newProducts = cart.products.filter(prod=>prod.id._id!=productId);
+                const newProducts = cart.products.filter(
+                    (prod) => prod._id.toString() != productId.toString());
                 cart.products = [...newProducts];
                 const data = await this.model.findByIdAndUpdate(cartId, cart,{new:true});
                 return data;

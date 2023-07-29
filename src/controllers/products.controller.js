@@ -1,6 +1,9 @@
 import { ProductsMongo } from "../dao/managers/products.mongo.js";
+import { CustomError } from "../services/errors/customError.service.js";
+import { generateProductErrorParams } from "../services/productErrorParams.service.js";
+import { EError } from "../enums/Eerror.js";
 // se importa el modelo de productos
-import { ProductsModel } from "../dao/models/product.model.js";
+// import { ProductsModel } from "../daos/models/product.model.js";
 
 //services
 const productsService = new ProductsMongo();
@@ -59,7 +62,13 @@ export const addProductControl = async (req, res)=>{
     try {
         const {title, description, code, price, status, stock, category} = req.body;
         if (!title || !description || !code || !price || !status || !stock || !category ) {
-            return res.status(400).json({status: "error", message: "Cada campo debe ser llenado"})
+            CustomError.createError({
+                name: "Error al crear el producto",
+                cause: generateProductErrorParams(),
+                message: "Error en la creación del producto",
+                errorCode: EError.INVALID_JSON
+            })
+            // return res.status(400).json({status: "error", message: "Cada campo debe ser llenado"})
         }
     
         const newProduct = req.body;
@@ -115,7 +124,7 @@ export const deleteProduct = async(req,res)=>{
         const productId = req.params.pid;
         //luego eliminamos el producto
         const productdeleted = await productsService.deleteProduct(productId);
-        res.json({status:"success", result:productdeleted.message});
+        res.json({status: "success", message: "product deleted", product: productList});
         console.log(productdeleted);
     } catch (error) {
         res.status(400).json({message: "No existe producto con este id"});

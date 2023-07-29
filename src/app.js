@@ -14,21 +14,25 @@ import handlebars from "express-handlebars";
 import { authRouter } from "./routes/auth.routes.js";
 import passport from "passport";
 import { initializePassport } from "./config/passport.config.js";
-// import { ProductManager } from "./dao/managers/Product.Manager.js";
+import { ProductsFiles } from "./dao/managers/products.files.js";
 import { ChatMongo } from "./dao/managers/chat.mongo.js";
 import { config } from "./config/config.js";
 import { mockRouter } from "./routes/mock.routes.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
-//const productManager = new ProductManager("products.json");
+
+const productsFiles = new ProductsFiles("products.json");
 
 //configuración del servidor express (http)
 const app = express();
 const port = 8080;
 
 //midlewares
+app.use(errorHandler);
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname,"/public")));
+
 
 //Conexión a la base de datos
 connectDB();
@@ -52,7 +56,7 @@ app.use(passport.session());
 app.use(viewsRouter);
 app.use("/api/products",productsRouter);
 app.use("/api/carts",cartsRouter);
-//app.use("/realTimeProducts", viewsRouter);
+app.use("/realTimeProducts", viewsRouter);
 app.use("/api/sessions", authRouter);
 app.use("/api/mockingproducts", mockRouter);
 
@@ -83,15 +87,46 @@ app.set("views",path.join(__dirname,"/views"));
 app.set("view engine","handlebars");
 
 //función principal del servidor websocket
-io.on("connection", async (socket) => {
-	console.log("id: " + socket.client.conn.id);
+io.on("connection", async(socket)=>{
+    try {
+        console.log(`nuevo socket cliente conectado ${socket.id}`)
+    const totalProducts = await productsFiles.getProducts();
+    socketServer.emit("totalProductsMessage", totalProducts);
 
-	const items = await productManager.getProducts();
-	socket.emit("itemShow", items);
+    socket.on("newProduct", async(data)=>{
+        try {
+            console.log("newProduct", data);
+            const addedProduct = await productsFiles.addProduct(data);
+            
+            socketServer.emit("newProductMessage", addedProduct);
+        } catch (error) {
+            throw new error (error.message);
+        }
+       
+    });
+    } catch (error) {
+        throw new error (error.message);
+    }
 
-	socket.on("item", async (product) => {
-		await productManager.addProduct(product);
-		const items = await productManager.getProducts();
-		io.emit("itemShow", items);
-	});
+    socket.on("deleteOrder", async(data)=>{
+        try {
+            await productsFiles.deleteProduct(data);
+        } catch (error) {
+            throw new error (error.message); 
+        }        
+    })
 });
+
+
+// io.on("connection", async (socket) => {
+// 	console.log("id: " + socket.client.conn.id);
+
+// 	const items = await productsService.getProducts();
+// 	socket.emit("itemShow", items);
+
+// 	socket.on("item", async (product) => {
+// 		await productsService.addProduct(product);
+// 		const items = await productsService.getProducts();
+// 		io.emit("itemShow", items);
+// 	});
+// });

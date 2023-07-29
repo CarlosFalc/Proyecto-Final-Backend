@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import {__dirname} from "../../utils.js";
+import { error } from "console";
 //import {options} from "../../config/options.js";
 
 class ProductsFiles{
@@ -20,7 +21,7 @@ class ProductsFiles{
             newId=products[products.length-1].id+1;
         }
         return newId
-    }
+    };
 
     async addProduct(product){
         try {
@@ -41,7 +42,7 @@ class ProductsFiles{
                 return product;
             }
         } catch (error) {
-            throw new Error(error);
+            throw new error(error.message);
         }
     };
 
@@ -69,13 +70,13 @@ class ProductsFiles{
                 if (product) {
                     return product;
                 } else{
-                    throw new Error("No se encontró el producto");
+                    throw new error("No se encontró el producto");
                 }
             } else {
                 throw new Error("El archivo no existe");
             }
         } catch (error) {
-            throw new Error(error.message);
+            throw new error(error.message);
         }
     };
 
@@ -102,7 +103,7 @@ class ProductsFiles{
                 throw new Error("El archivo no existe");
             }
         } catch (error) {
-            throw new Error(error);
+            throw new error(error);
         }
     }
 
@@ -116,13 +117,13 @@ class ProductsFiles{
                     await fs.promises.writeFile(this.path,JSON.stringify(newProducts,null,2));
                     return {message:"producto eliminado"};
                 } else{
-                    throw new Error("no se encontró el producto");
+                    throw new error("no se encontró el producto");
                 }
             } else {
                 throw new Error("El archivo no existe");
             }
         } catch (error) {
-            throw new Error(error);
+            throw new error(error);
         }
     };
 }

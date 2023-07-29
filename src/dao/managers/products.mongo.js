@@ -5,7 +5,7 @@ class ProductsMongo{
         this.model = ProductsModel;
     }
 
-    async getPaginate(query={},options={}){
+    async getPaginate(query={}, options={}){
         try {
             const result = await this.model.paginate(query, options);
             return result;
@@ -25,11 +25,11 @@ class ProductsMongo{
 
     async getProducts(){
         try {
-            const data = await this.model.find();
-            const response = JSON.parse(JSON.stringify(data));
-            return response;
+            const data = await this.model.find().lean();
+            // const response = JSON.parse(JSON.stringify(data));
+            return data;
         } catch (error) {
-            throw new Error(`Error get all ${error}`);
+            throw new Error(`Error al obtener productos ${error.message}`);
         }
     };
 
@@ -37,7 +37,7 @@ class ProductsMongo{
         try {
             const data = await this.model.findById(id);
             if(!data){
-                throw new Error("el producto no existe")
+                throw new Error(`El producto con id: ${id} no existe`)
             }
             return data;
         } catch (error) {
@@ -49,7 +49,7 @@ class ProductsMongo{
         try {
             const data = await this.model.findByIdAndUpdate(id,product,{new:true});
             if(!data){
-                throw new Error("el producto no existe")
+                throw new Error(`El producto con id: ${id} no existe`);
             }
             return data;
         } catch (error) {
@@ -60,7 +60,7 @@ class ProductsMongo{
     async deleteProduct(id){
         try {
             await this.model.findByIdAndDelete(id);
-            return {message: "producto eliminado"};
+            return {message: `EL producto con el id: ${id} fué eliminado`};
         } catch (error) {
             throw new Error(`Error al eliminar el producto ${error.message}`);
         }
