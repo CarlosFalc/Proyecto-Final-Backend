@@ -3,6 +3,7 @@ import { ProductsMongo } from "../dao/managers/products.mongo.js";
 import { ProductsModel } from "../dao/models/product.model.js";
 import { CartsMongo } from "../dao/managers/carts.mongo.js";
 import { checkUserAuthenticated, checkRoles } from "../middlewares/auth.js";
+import { logger } from "../utils/logger.js";
 //import { CartModel } from "../dao/models/carts.model.js";
 
 const productsService = new ProductsMongo();
@@ -117,11 +118,20 @@ router.get("/cart/:cid",async(req,res)=>{
         const cart = await cartsService.getCartById(cartId);
         const result = JSON.parse(JSON.stringify(cart));
         res.render("cart",result);
-        console.log(result);
+        logger.http(result);
         } catch (error) {
         // console.log(error.message);
         res.send(`<div>error al cargar esta vista</div>`);
     }
 });
 
+router.get("/loggerTest", (req, res)=>{
+    res.send("testeando logger")
+    logger.debug("mensaje debug");
+    logger.http("mensaje de tipo http");
+    logger.info("mensaje informativo");
+    logger.warning("mensaje de advertencia");
+    logger.error("mensaje de error");
+    logger.fatal("mensaje de error crítico o fatal");
+});
 export {router as viewsRouter};

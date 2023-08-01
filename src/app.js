@@ -19,7 +19,7 @@ import { ChatMongo } from "./dao/managers/chat.mongo.js";
 import { config } from "./config/config.js";
 import { mockRouter } from "./routes/mock.routes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
-
+import { logger } from "./utils/logger.js";
 
 const productsFiles = new ProductsFiles("products.json");
 
@@ -62,7 +62,7 @@ app.use("/api/mockingproducts", mockRouter);
 
 //servidor http
 const httpServer = app.listen(port,()=>
-console.log(`Server on listening on port ${port}`));
+logger.info(`Server on listening on port ${port}`));
 
 //servidor de websocket
 const io = new Server(httpServer);
@@ -89,13 +89,13 @@ app.set("view engine","handlebars");
 //función principal del servidor websocket
 io.on("connection", async(socket)=>{
     try {
-        console.log(`nuevo socket cliente conectado ${socket.id}`)
+        logger.info(`nuevo socket cliente conectado ${socket.id}`)
     const totalProducts = await productsFiles.getProducts();
     socketServer.emit("totalProductsMessage", totalProducts);
 
     socket.on("newProduct", async(data)=>{
         try {
-            console.log("newProduct", data);
+            logger.http("newProduct", data);
             const addedProduct = await productsFiles.addProduct(data);
             
             socketServer.emit("newProductMessage", addedProduct);
