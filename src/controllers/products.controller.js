@@ -2,6 +2,7 @@ import { ProductsMongo } from "../dao/managers/products.mongo.js";
 import { CustomError } from "../services/errors/customError.service.js";
 import { generateProductErrorParams } from "../services/productErrorParams.service.js";
 import { EError } from "../enums/Eerror.js";
+import { logger } from "../utils/logger.js";
 // se importa el modelo de productos
 // import { ProductsModel } from "../daos/models/product.model.js";
 
@@ -81,10 +82,11 @@ export const addProductControl = async (req, res)=>{
                 
         const productAdded = await productsService.addProduct(newProduct);
         res.json({status: "success", product: productAdded});
-        console.log(productAdded);
+        logger.http(productAdded);
         }
     } catch (error) {
         res.status(500).json({status: "error", message: error.message});
+        logger.error("mensaje de error");
     }
 };
 
@@ -112,10 +114,11 @@ export const updateProductControl = async(req, res)=>{
         const newData = req.body;   
         const updatedProduct = await productsService.updateProducts(productId, newData);
         res.json({status: "success", message: "product updated", product: updatedProduct});
-        console.log(updatedProduct);
+        logger.http(updatedProduct);
 
     } catch (error) {
         res.status(400).json({status: "error", message: "there is not product with this id"});
+        logger.error("mensaje de error");
     }
 };
 
@@ -125,8 +128,9 @@ export const deleteProduct = async(req,res)=>{
         //luego eliminamos el producto
         const productdeleted = await productsService.deleteProduct(productId);
         res.json({status: "success", message: "product deleted", product: productList});
-        console.log(productdeleted);
+        logger.http(productdeleted);
     } catch (error) {
         res.status(400).json({message: "No existe producto con este id"});
+        logger.error("mensaje de error");
     }
 };

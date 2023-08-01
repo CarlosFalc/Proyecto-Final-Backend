@@ -4,6 +4,7 @@ import { ProductsMongo } from "../dao/managers/products.mongo.js";
 //import { ProductsModel } from "../dao/models/product.model.js";
 import { TicketMongo } from "../dao/managers/ticketManagerMongo.js"
 import { v4 as uuidv4 } from "uuid";
+import { logger } from "../utils/logger.js";
 
 //services
 const cartsService = new CartsMongo();
@@ -15,9 +16,10 @@ export const addCart = async(req,res)=>{
     try {
         const cartAdded = await cartsService.addCart();
         res.json({status: "success", cart: cartAdded});
-        console.log(cartAdded);
+        logger.http(cartAdded);
     } catch (error) {
         res.status(400).json({status:"error", error:error.message});
+        logger.error("mensaje de error");
     }
 };
 
@@ -27,12 +29,13 @@ export const getCarts = async(req,res)=>{
         const cart = await cartsService.getCarts(cartId);
         if (cart) {
         res.json({status:"success", cart:cart});
-        console.log(cart);
+        logger.http(cart);
     } else{
         res.status(400).json({status: "error", message: "Este carrito no existe"})
     }
     } catch (error) {
         res.status(500).json({status:"error", message:error.message});
+        logger.error("mensaje de error");
     }
 };
 
@@ -47,6 +50,7 @@ export const addProductToCart = async(req,res)=>{
             if (product) {
                 const result = await cartsService.addProductToCart(cartId, productId);
                 res.json({status: "success", message: result});
+                logger.http(result);
             } else {
                 res.status(400).json({status: "error", message: "No se puede agregar este producto"});
             }
@@ -56,6 +60,7 @@ export const addProductToCart = async(req,res)=>{
         }
     } catch (error) {
         res.status(500).json({status: "error", message: error.message});
+        logger.error("mensaje de error");
     }
 };
 
@@ -68,9 +73,10 @@ export const updateCart = async(req,res)=>{
         cart.products = [...products];
         const response = await cartsService.updateCart(cartId, cart);
         res.json({status:"success", result:response, message:"Carrito actualizado"});
-        console.log(response);
+        logger.http(response);
     } catch (error) {
         res.status(400).json({status:"error", error:error.message});
+        logger.error("mensaje de error");
     }
 };
 
@@ -83,9 +89,10 @@ export const updateQuantityInCart = async(req,res)=>{
         await productsService.getProductById(productId);
         const response = await cartsService.updateQuantityInCart(cartId, productId, quantity);
         res.json({status:"success", result: response, message:"Producto actualizado"});
-        console.log(responde);
+        logger.http(response);
     } catch (error) {
         res.status(400).json({status:"error", message :error.message});
+        logger.error("mensaje de error");
     }
 };
 
@@ -109,6 +116,7 @@ export const deleteProduct = async(req,res)=>{
         }
     } catch (error) {
         res.status(400).json({status:"error", message:error.message});
+        logger.error("mensaje de error");
     }
 };
 
@@ -121,6 +129,7 @@ export const deleteCart = async(req,res)=>{
         res.json({status:"success", result: response, message:"productos eliminados"});
     } catch (error) {
         res.status(400).json({status:"error", error:error.message});
+        logger.error("mensaje de error");
     }
 };
 
@@ -137,7 +146,7 @@ export const purchaseControl = async(req,res)=>{
         if(cart.products.length == 0){
             res.status(400).json({status: "error", message: "Este carrito no tiene productos"});  
         }else{
-            console.log(cart);
+            logger.debug(cart);
        for (let i = 0; i < cart.products.length; i++) {
             let productIdCart = cart.products[i].productId._id;
 
@@ -156,9 +165,9 @@ export const purchaseControl = async(req,res)=>{
                 rejectedProductPurchase.push(cart.products[i]);
              }
        }
-       console.log("aprobados: ", approvedProductPurchase);
+       logger.debug("aprobados: ", approvedProductPurchase);
 
-       console.log("rechazados: ", rejectedProductPurchase);
+       logger.debug("rechazados: ", rejectedProductPurchase);
 
        if (approvedProductPurchase.length > 0 & rejectedProductPurchase.length == 0) {
         const ticket = {
@@ -170,12 +179,12 @@ export const purchaseControl = async(req,res)=>{
 
         const response = await ticketManager.createTicket(ticket);
         res.json({status:"success", result:response});
-        console.log(response);
+        logger.http(response);
        };
 
        if (rejectedProductPurchase.length > 0 & approvedProductPurchase.length == 0) {
         res.json({status:"success",  message: "stock insuficiente de estos productos, no se puede realizar la compra", data: rejectedProductPurchase});
-        console.log("stock insuficiente de estos productos, no se puede realizar la compra ", rejectedProductPurchase);
+        logger.http("stock insuficiente de estos productos, no se puede realizar la compra ", rejectedProductPurchase);
        };
 
 
@@ -189,11 +198,12 @@ export const purchaseControl = async(req,res)=>{
             
             const response = await ticketManager.createTicket(ticket);
             res.json({status: "success", result: response, message: "los siguientes productos no se pudieron comprar por falta de stock", data: rejectedProductPurchase});
-            console.log(result, " los siguientes productos no se pudieron comprar por falta de stock: ", rejectedProductPurchase);
+            logger.http(result, " los siguientes productos no se pudieron comprar por falta de stock: ", rejectedProductPurchase);
         };
 
     };
     } catch (error) {
         res.status(400).json({status:"error", error:error.message});
+        logger.error("mensaje de error");
     }
 };
