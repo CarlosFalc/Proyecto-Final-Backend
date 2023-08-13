@@ -17,12 +17,12 @@ router.get("/", getProducts);
 router.get("/:pid", getProductById);
 
 //ruta para agregar un producto
-router.post("/", checkUserAuthenticated, checkRoles(["admin"]), addProductControl);
+router.post("/", checkUserAuthenticated, checkRoles(["admin","premium"]), addProductControl);
 
 //ruta para actualizar un producto
-router.put("/:pid", checkUserAuthenticated, checkRoles(["admin"]), updateProductControl);
+router.put("/:pid", checkUserAuthenticated, checkRoles(["admin","premium"]), updateProductControl);
 
 //ruta para eliminar un producto
-router.delete("/:pid", checkUserAuthenticated, checkRoles(["admin"]), deleteProduct);
+router.delete("/:pid", checkUserAuthenticated, checkRoles(["admin","premium"]), deleteProduct);
 
 export {router as productsRouter};

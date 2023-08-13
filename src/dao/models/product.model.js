@@ -10,12 +10,11 @@ const productSchema = new mongoose.Schema({
     price: {type: Number, required:true},    
     status: {type: Boolean, default:true},
     stock: {type: String, required:true},
-    category: {
-        type: String,
-        required:true,
-        enum: ["Muebles","Baño y Cocina","Parrillas"],},
-    thumbnail: {type:String, required:true}    
+    category: {type: String, required:true},
+    thumbnail: {type:String, required:true},
+    owner:{type: mongoose.Schema.Types.ObjectId, ref:"users"}
 });
+
 productSchema.plugin(mongoosePaginate);
 
 export const ProductsModel = mongoose.model(productCollection,productSchema);

@@ -48,10 +48,14 @@ export const addProductToCart = async(req,res)=>{
         if (cart) {
             const product = await productsService.getProductById(productId);
             if (product) {
-                const result = await cartsService.addProductToCart(cartId, productId);
-                res.json({status: "success", message: result});
-                logger.http(result);
-            } else {
+                if(req.user.role === "premium" && JSON.stringify(product.owner) == JSON.stringify(req.user._id)){
+                    res.status(400).json({status: "error", message: "you are not allowed to add this product"});
+                } else{
+                    const result = await cartsService.addProductToCart(cartId, productId);
+                    res.json({status: "success", message: result});
+                    logger.http(result);
+                }
+                } else {
                 res.status(400).json({status: "error", message: "No se puede agregar este producto"});
             }
             
@@ -163,8 +167,8 @@ export const purchaseControl = async(req,res)=>{
              }else{
                
                 rejectedProductPurchase.push(cart.products[i]);
-             }
-       }
+             };
+       };
        logger.debug("aprobados: ", approvedProductPurchase);
 
        logger.debug("rechazados: ", rejectedProductPurchase);

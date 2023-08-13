@@ -4,6 +4,7 @@ import { ProductsModel } from "../dao/models/product.model.js";
 import { CartsMongo } from "../dao/managers/carts.mongo.js";
 import { checkUserAuthenticated, checkRoles } from "../middlewares/auth.js";
 import { logger } from "../utils/logger.js";
+import { resetPassword } from "../controllers/sessions.controller.js";
 //import { CartModel } from "../dao/models/carts.model.js";
 
 const productsService = new ProductsMongo();
@@ -19,14 +20,6 @@ router.get("/", async(req,res)=>{
         res.render("home", {products: products});
     }catch (error) {
         res.status(500).json({status: "error", message: error.message});
-    }
-});
-
-router.get("/login", (req,res)=>{
-    if(req.user){
-        res.send(`<div> sesión activa, <a href= "/products?page=1">ir a los productos</a></div>`);
-    }else{
-        res.render("login");
     }
 });
 
@@ -48,7 +41,7 @@ router.get("/", (req,res)=>{
 
 router.get("/products",async(req,res)=>{
     try {
-        const {limit=3,page=1,sort="asc",category,stock} = req.query;
+        const {limit=2,page=1,sort="asc",category,stock} = req.query;
         if(!["asc","desc"].includes(sort)){
             return res.json({status:"error", message:"ordenamiento no valido, solo puede ser asc o desc"})
         };
@@ -123,6 +116,27 @@ router.get("/cart/:cid",async(req,res)=>{
         // console.log(error.message);
         res.send(`<div>error al cargar esta vista</div>`);
     }
+});
+
+router.get("/login", (req, res)=>{
+    if(req.user){
+        res.send(`<div> sesión activa, <a href= "/products?page=1">ir a los productos</a></div>`);
+    }else{
+    res.render("login");
+    };
+});
+
+router.get("/register", (req, res)=>{
+    res.render("register");
+});
+
+router.get("/forgot-password", (req, res)=>{
+    res.render("forgotPassword");
+});
+
+router.get("/reset-password", (req, res)=>{
+    const token = req.query.token;
+    res.render("resetPass", {token});
 });
 
 router.get("/loggerTest", (req, res)=>{

@@ -17,7 +17,6 @@ export const getProducts = async(req,res)=>{
         };
         const sortValue = sort === "asc" ? 1 : -1;
         const stockValue = stock === 0 ? undefined : parseInt(stock);
-        // console.log("limit: ", limit, "page: ", page, "sortValue: ", sortValue, "category: ", category, "stock: ", stock);
         let query = {};
         if(category && stockValue){
             query = {category: category, stock:stockValue}
@@ -68,7 +67,7 @@ export const addProductControl = async (req, res)=>{
                 cause: generateProductErrorParams(),
                 message: "Error en la creación del producto",
                 errorCode: EError.INVALID_JSON
-            })
+            });
             // return res.status(400).json({status: "error", message: "Cada campo debe ser llenado"})
         }
     
@@ -112,12 +111,16 @@ export const updateProductControl = async(req, res)=>{
         }
         
         const newData = req.body;   
-        const updatedProduct = await productsService.updateProducts(productId, newData);
-        res.json({status: "success", message: "product updated", product: updatedProduct});
+        const product = await productsService.getProductById(productId);
+        if(req.user.role === "premium" && JSON.stringify(product.owner) == JSON.stringify(req.user._id) || req.user.role === "admin"){
+        const updatedProduct = await productManager.updateProducts(productId, newData);
+        res.json({status: "success", message: "producto modificado", product: updatedProduct});
         logger.http(updatedProduct);
-
+        } else{
+            res.status(400).json({status: "error", message: "no tienes permiso para actualizar este producto"});
+        }    
     } catch (error) {
-        res.status(400).json({status: "error", message: "there is not product with this id"});
+        res.status(400).json({status: "error", message: "No hay producto con este id"});
         logger.error("mensaje de error");
     }
 };
@@ -125,10 +128,15 @@ export const updateProductControl = async(req, res)=>{
 export const deleteProduct = async(req,res)=>{
     try {
         const productId = req.params.pid;
+        const product = await productsService.getProductById(productId);
+        if(req.user.role === "premium" && JSON.stringify(product.owner) == JSON.stringify(req.user._id) || req.user.role === "admin"){
         //luego eliminamos el producto
         const productdeleted = await productsService.deleteProduct(productId);
         res.json({status: "success", message: "product deleted", product: productList});
         logger.http(productdeleted);
+        } else{
+            res.status(400).json({status: "error", message: "no tienes permiso para eliminar este producto"});
+        }
     } catch (error) {
         res.status(400).json({message: "No existe producto con este id"});
         logger.error("mensaje de error");

@@ -6,6 +6,7 @@ import path from "path";
 import { __dirname } from "./utils.js";
 import { connectDB } from "./config/dbConnection.js";
 import { viewsRouter } from "./routes/views.routes.js";
+//import { sessionsRouter } from "./routes/sessions.routes.js";
 import { productsRouter } from "./routes/products.routes.js";
 import { cartsRouter } from "./routes/carts.routes.js";
 import { Server } from "socket.io";

@@ -1,7 +1,7 @@
 import passport from "passport";
 import localStrategy from "passport-local";
 import { userModel } from "../dao/models/user.model.js";
-import { createHash, isValidPassword } from "../utils.js";
+import { createHash, validPassword } from "../utils.js";
 import { logger } from "../utils/logger.js";
 
 
@@ -60,7 +60,7 @@ export const initializePassport = ()=>{
     
                 if (userDB) {
                     
-                    if (isValidPassword(password, userDB)) {
+                    if (validPassword(password, userDB)) {
                         return done(null, JSON.parse(JSON.stringify(userDB)));
                     } else{
                         return done(null,false);
