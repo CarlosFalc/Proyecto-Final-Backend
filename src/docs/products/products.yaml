@@ -1,0 +1,210 @@
+paths:
+  /api/products/:
+    get:
+      summary: Ruta para obtener todos los productos
+      tags:
+        - productos
+      responses:
+        "200":
+          description: Los productos se obtuvieron correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/products'
+        "500":
+          description: Error interno del servidor
+    post:
+      summary: Ruta para crear un producto
+      tags:
+      - productos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/UpdateUser'
+      responses:
+        "200":
+          description: El producto fué creado correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/products'
+        "500":
+          description: Error interno del servidor
+
+  /api/products/{pid}:
+    get:
+      summary: Ruta para obtener un producto ingresando su id
+      tags:
+        - productos
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: id del producto que se desea obtener
+          schema:
+            $type: string
+      responses:
+        "200":
+          description: El producto se obtuvo correctamente
+          content:
+            aplication/json:
+              schema:
+                $ref: '#components/schemas/products'
+        "400":
+          description: No existe el producto con ese id
+        "500":
+          description: Error interno del servidor
+    put:
+      summary: Ruta para actualizar un producto con su id
+      tags:
+        -  productos
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: id del producto que se desea actualizar
+          schema:
+            $type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/UpdateProduct'
+      responses:
+        "200":
+          description: El producto se actualizó correctamente
+          content:
+            aplication/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+                  product:
+                    $ref: '#components/schemas/products'
+        "400":
+          description: No existe el producto con ese id
+        "500":
+          description: Error interno del servidor
+    delete:
+      summary: Ruta para eliminar un producto proporcionando su id
+      tags:
+        - productos
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: id del producto que se desea eliminar
+          schema:
+            $type: string
+      responses:
+        "200":
+          description: El producto se eliminó correctamente
+          content:
+            aplication/json:
+              schema:
+                $ref: '#components/schemas/products'
+        "400":
+          description: No existe el producto con ese id
+        "500":
+          description: Error interno del servidor
+
+
+components:
+  schemas:
+    products:
+      type: object
+      properties:
+        _id:
+          type: objectId
+          description: id autogenerado por la base de datos
+        title:
+          type: string
+          description: Título general del producto
+        description:
+          type: string
+          description: Descripción del producto
+        price:
+          type: number
+          description: Precio del producto en CLP
+        code:
+          type: string
+          description: código único del producto
+        status:
+          type: boolean
+          description: status
+        thumbnail:
+          type: string
+          description: Imágen del producto
+        category:
+          type: string
+          description: Categoría a la cual pertenece el producto
+        stock:
+          type: string
+          description: unidades disponibles del producto para la venta
+        __v:
+          type: number
+          description: version del producto
+        owner:
+          type: objectId
+          description: id de la persona que creó el producto
+      example:
+        _id: 64687f8fa591e9e7cf8575fc
+        title: "Instalación de Calefont"
+        description: "Servicios de instalación Sodimac"
+        price: 74990
+        code: "3686213"
+        status: true
+        thumbnail: "https://sodimac.falabella.com/sodimac-cl/product/110685359/Instalacion…"
+        category: "Baño y Cocina"
+        stock: "1000"
+        __v: 0
+        owner: 64687f8fa591e9e7cf8575fc
+
+
+  requestBodies:
+    UpdateProduct:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Título general del producto
+        description:
+          type: string
+          description: Descripción del producto
+        price:
+          type: number
+          description: Precio del producto en CLP
+        code:
+          type: string
+          description: código único del producto
+        status:
+          type: boolean
+          description: status
+        thumbnail:
+          type: string
+          description: Imágen del producto
+        category:
+          type: string
+          description: Categoría a la cual pertenece el producto
+        stock:
+          type: string
+          description: unidades disponibles del producto para la venta
+      example:
+        title: "Instalación de Calefont"
+        description: "Servicios de instalación Sodimac"
+        price: 74990
+        code: "3686213"
+        status: true
+        thumbnail: "https://sodimac.falabella.com/sodimac-cl/product/110685359/Instalacion…"
+        category: "Baño y Cocina"
+        stock: "1000"

@@ -14,10 +14,10 @@ class ProductsMongo{
         }
     };
 
-    async createProduct(product){
+    async addProduct(product){
         try {
             const data = await this.model.create(product);
-            return data;
+            return data
         } catch (error) {
             throw new Error(`Error al crear el producto ${error.message}`);
         }

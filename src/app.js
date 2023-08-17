@@ -9,6 +9,7 @@ import { viewsRouter } from "./routes/views.routes.js";
 //import { sessionsRouter } from "./routes/sessions.routes.js";
 import { productsRouter } from "./routes/products.routes.js";
 import { cartsRouter } from "./routes/carts.routes.js";
+import { usersRouter } from "./routes/users.routes.js";
 import { Server } from "socket.io";
 import handlebars from "express-handlebars";
 //import { options } from "./config/options.js";
@@ -21,12 +22,14 @@ import { config } from "./config/config.js";
 import { mockRouter } from "./routes/mock.routes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { logger } from "./utils/logger.js";
+import { swaggerSpecs } from "./config/swaggerConfig.js";
+import swaggerUI from "swagger-ui-express";
 
 const productsFiles = new ProductsFiles("products.json");
 
 //configuración del servidor express (http)
 const app = express();
-const port = 8080;
+const port = config.server.port;
 
 //midlewares
 app.use(errorHandler);
@@ -60,6 +63,8 @@ app.use("/api/carts",cartsRouter);
 app.use("/realTimeProducts", viewsRouter);
 app.use("/api/sessions", authRouter);
 app.use("/api/mockingproducts", mockRouter);
+app.use("/api/users", usersRouter);
+app.use("/documentation", swaggerUI.serve, swaggerUI.setup(swaggerSpecs));
 
 //servidor http
 const httpServer = app.listen(port,()=>
