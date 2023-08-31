@@ -14,7 +14,8 @@ router.get("/register-failed", (req, res)=>{
 });
 
 router.post("/login", passport.authenticate("loginStrategy", {failureRedirect: "/api/sessions/login-failed"}), (req, res)=>{
-    res.redirect("/products?page=1");
+    // res.redirect("/products?page=1");
+    res.send("Login exitoso");
 });
 
 router.get("/login-failed", (req, res)=>{

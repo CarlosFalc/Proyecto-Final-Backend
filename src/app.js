@@ -87,6 +87,7 @@ io.on("connection",async(socket)=>{
 	});
 });
 
+
 //configuración del motor de plantillas
 app.engine("handlebars",handlebars.engine());
 app.set("views",path.join(__dirname,"/views"));
@@ -123,6 +124,7 @@ io.on("connection", async(socket)=>{
     })
 });
 
+export {app}
 
 // io.on("connection", async (socket) => {
 // 	console.log("id: " + socket.client.conn.id);
