@@ -21,7 +21,7 @@ describe("testing para autenticación", ()=>{
         await userModel.deleteMany({});
     });
 
-    it("El endpoint post api/sessions/signup permite registrar un usuario", async function () {
+    it("El endpoint post api/sessions/register permite registrar un usuario", async function () {
         const response = await requester.post("/api/sessions/signup").send(this.userMock);
         expect(response.statusCode).to.be.equal(200);
     });
@@ -29,7 +29,7 @@ describe("testing para autenticación", ()=>{
     it("El endpoint post api/sessions/login permite loguear un usuario", async function () {
         const response = await requester.post("/api/sessions/login").send({email:this.userMock.email, password:this.userMock.password});
         expect(response.statusCode).to.be.equal(200);
-        expect(response.text).to.be.equal("login exitoso");
+        expect(response.text).to.be.equal("Login exitoso");
 
     });
 
@@ -75,6 +75,6 @@ describe("testing para productos", ()=>{
         const productId = JSON.parse(JSON.stringify(response._body.payload[0]._id));
         const result = await requester.get(`/api/products/${productId}`);
         expect(result.statusCode).to.be.equal(200);
-        expect(result._body.product).to.have.property("code");
+        expect(result._body.result).to.have.property("code");
     });
 });
