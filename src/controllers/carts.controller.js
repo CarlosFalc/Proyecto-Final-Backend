@@ -23,10 +23,10 @@ export const addCart = async(req,res)=>{
     }
 };
 
-export const getCarts = async(req,res)=>{
+export const getCartById = async(req,res)=>{
     try {
         const cartId = req.params.cid;
-        const cart = await cartsService.getCarts(cartId);
+        const cart = await cartsService.getCartById(cartId);
         if (cart) {
         res.json({status:"success", cart:cart});
         logger.http(cart);
@@ -43,7 +43,7 @@ export const addProductToCart = async(req,res)=>{
     try {
         const cartId = req.params.cid;
         const productId = req.params.pid;
-        const cart = await cartsService.getCarts(cartId);
+        const cart = await cartsService.getCartById(cartId);
         // verificar que el producto exista antes de agregarlo al carrito.
         if (cart) {
             const product = await productsService.getProductById(productId);

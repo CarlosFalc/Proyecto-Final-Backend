@@ -1,10 +1,10 @@
 //import mongoose from "mongoose";
-import { CartModel } from "../models/carts.model.js";
+import { cartModel } from "../models/carts.model.js";
 // import { response } from "express";
 
-class CartsMongo{
+export class CartsMongo{
     constructor(){
-        this.model = CartModel;
+        this.model = cartModel;
     };
 
     async addCart(){
@@ -32,21 +32,21 @@ class CartsMongo{
         }
     };
 
-    async get(cartId){
-        try {
-            const result = await this.model.findOne({_id:cartId});
-            if(!result){
-                throw new Error(`No se encontro el carrito ${error.message}`);
-            }
-            //convertir el formato bson a json
-            const data = JSON.parse(JSON.stringify(result));
-            return data;
-        } catch (error) {
-            throw new Error(`Error create cart ${error.message}`);
-        }
-    };
+    // async get(cartId){
+    //     try {
+    //         const result = await this.model.findOne({_id:cartId});
+    //         if(!result){
+    //             throw new Error(`No se encontro el carrito ${error.message}`);
+    //         }
+    //         //convertir el formato bson a json
+    //         const data = JSON.parse(JSON.stringify(result));
+    //         return data;
+    //     } catch (error) {
+    //         throw new Error(`Error create cart ${error.message}`);
+    //     }
+    // };
 
-    async addProduct(cartId,productId){
+    async addProductToCart(cartId,productId){
         try {
             const cart = await this.getCartById(cartId);
             const productIndex = cart.products.findIndex(element=>element.id===productId);
@@ -67,11 +67,9 @@ class CartsMongo{
     async deleteProduct(cartId,productId){
         try {
             const cart = await this.getCartById(cartId);
-            const productIndex = cart.products.findIndex(
-                (prod) => prod._id.toString() === productId.toString());
+            const productIndex = cart.products.findIndex(element=>element.id==productId);
             if(productIndex>=0){
-                const newProducts = cart.products.filter(
-                    (prod) => prod._id.toString() != productId.toString());
+                const newProducts = cart.products.filter(element=>element.id==productId);
                 cart.products = [...newProducts];
                 const data = await this.model.findByIdAndUpdate(cartId, cart,{new:true});
                 return data;
@@ -87,11 +85,8 @@ class CartsMongo{
 
     async updateCart(id, cart){
         try {
-            const cartUpdated = await this.model.findByIdAndUpdate(id,cart);
-            if(cartUpdated){
-                return "Carrito actualizado";
-            }
-            throw new Error(`El carrito no existe`);
+            await this.model.findByIdAndUpdate(id,cart);
+            return "Carrito ctualizado";
         } catch (error) {
             throw new Error(error.message)
         }
@@ -113,5 +108,4 @@ class CartsMongo{
             throw new Error(error.message)
         }
     };
-}
-export {CartsMongo}
+};

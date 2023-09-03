@@ -1,9 +1,9 @@
 import {Router} from "express";
 import { CartsMongo } from "../dao/managers/carts.mongo.js";
 import { ProductsMongo } from "../dao/managers/products.mongo.js";
-import { CartModel } from "../dao/models/carts.model.js";
+import { cartModel } from "../dao/models/carts.model.js";
 import { ProductsModel } from "../dao/models/product.model.js";
-import { addCart, getCarts, addProductToCart, updateCart, updateQuantityInCart, deleteProduct, deleteCart, purchaseControl } from "../controllers/carts.controller.js";
+import { addCart, getCartById, addProductToCart, updateCart, updateQuantityInCart, deleteProduct, deleteCart, purchaseControl } from "../controllers/carts.controller.js";
 import { checkUserAuthenticated, checkRoles } from "../middlewares/auth.js";
 
 //services
@@ -16,7 +16,7 @@ const router = Router();
 router.post("/", addCart);
 
 //ruta para listar todos los productos de un carrito
-router.get("/:cid", getCarts);
+router.get("/:cid", getCartById);
 
 //ruta para agregar productos a un carro por id
 router.post("/:cid/product/:pid", checkUserAuthenticated, checkRoles(["user","premium"]), addProductToCart);

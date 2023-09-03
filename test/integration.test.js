@@ -2,7 +2,7 @@ import chai from "chai";
 import supertest from "supertest";
 import { app } from "../src/app.js";
 import { userModel } from "../src/dao/models/user.model.js";
-import { cartsModel } from "../src/dao/models/carts.model.js";
+import { cartModel } from "../src/dao/models/carts.model.js";
 
 const expect = chai.expect;
 const requester = supertest(app);
@@ -38,7 +38,7 @@ describe("testing para autenticación", ()=>{
 describe ("testing para carritos", ()=>{
 
     before(async function () {
-        await cartsModel.deleteMany({});
+        await cartModel.deleteMany({});
     });
 
     it("El endpoint post api/carts/ agrega un carrito", async function () {
