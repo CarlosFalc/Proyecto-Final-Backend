@@ -22,7 +22,7 @@ describe("testing para autenticación", ()=>{
     });
 
     it("El endpoint post api/sessions/register permite registrar un usuario", async function () {
-        const response = await requester.post("/api/sessions/signup").send(this.userMock);
+        const response = await requester.post("/api/sessions/register").send(this.userMock);
         expect(response.statusCode).to.be.equal(200);
     });
 
