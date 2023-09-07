@@ -91,15 +91,16 @@ export const addProductControl = async (req, res)=>{
 
 export const getProductById = async(req,res)=>{
     try {
-        const {pid} = req.params;
-        const product = await productsService.getProductById(pid);
+        const productId = req.params;
+        const product = await productsService.getProductById(productId);
         const {title, description, code, price, status, stock, category} = req.body;
         if (!title || !description || !code || !price || !status || !stock || !category )
         // console.log("product: ", product);
         res.status(200).json({status:"success", result:product});
     } catch (error) {
-        res.status(400).json({message:error.message});
-    }
+        res.status(400).json({status: "error", message: "No hay producto con este id"});
+        logger.error("mensaje de error");
+    };
 };
 
 export const updateProductControl = async(req, res)=>{
