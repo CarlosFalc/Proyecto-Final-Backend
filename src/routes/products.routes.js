@@ -5,10 +5,10 @@ import { ProductsMongo } from "../dao/managers/products.mongo.js";
 //import { ProductsModel } from "../dao/models/product.model.js";
 import { getProducts, getProductById, addProductControl, updateProductControl, deleteProduct } from "../controllers/products.controller.js";
 import { checkRoles, checkUserAuthenticated } from "../middlewares/auth.js";
+import { uploadImgProduct } from "../utils.js";
 
 //services
 const router = Router();
-//const productsService = new ProductsMongo();
 
 //ruta para obtener los productos
 router.get("/", getProducts);
@@ -17,7 +17,7 @@ router.get("/", getProducts);
 router.get("/:pid", getProductById);
 
 //ruta para agregar un producto
-router.post("/", checkUserAuthenticated, checkRoles(["admin","premium"]), addProductControl);
+router.post("/", checkUserAuthenticated, checkRoles(["admin","premium"]), uploadImgProduct.single("image"), addProductControl);
 
 //ruta para actualizar un producto
 router.put("/:pid", checkUserAuthenticated, checkRoles(["admin","premium"]), updateProductControl);
