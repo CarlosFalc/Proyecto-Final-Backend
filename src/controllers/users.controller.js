@@ -32,17 +32,16 @@ export const uploadDocumentsControl = async(req, res)=>{
         
         const userId = req.params.uid;
         const user = await userManager.getUserById(userId);
-
         if (!user) {
             return res.json({status: "error", message: "El usuario no existe"});
         }
         logger.debug(req.files);
         const identificacion = req.files["identificacion"][0] || null;
-        const domicilio = req.files["domicilio"][0] || null;
+        const domicilio = req.files["domicilio"]?.[0] || null;
         const estadoDeCuenta = req.files["estadoDeCuenta"][0] || null;
         const docs = [];
         if (identificacion) {
-            docs.push({name:"identificación", reference: identificacion.filename});
+            docs.push({name:"identificacion", reference: identificacion.filename});
         }
         if (domicilio) {
             docs.push({name:"domicilio", reference: domicilio.filename});
