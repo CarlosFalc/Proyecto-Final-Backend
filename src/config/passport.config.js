@@ -29,13 +29,13 @@ export const initializePassport = ()=>{
                     if (userRegisterForm.email.endsWith("@coder.com") && userRegisterForm.password.startsWith("adminCod3r")) {
                         userRegisterForm.role = "admin";
                         userRegisterForm.password = createHash(userRegisterForm.password);
-                        userRegisterForm.avatar = req.file.filename;
+                        //userRegisterForm.avatar = req.file.filename;
                         const userCreated = await userModel.create(userRegisterForm);
                         logger.debug(userCreated);
                         return done(null, userCreated);
                     }else{
                         userRegisterForm.password = createHash(userRegisterForm.password);
-                        userRegisterForm.avatar = req.file.filename;
+                        //userRegisterForm.avatar = req.file.filename;
                         const userCreated = await userModel.create(userRegisterForm);
         
                     logger.debug(userCreated);
@@ -90,4 +90,4 @@ export const initializePassport = ()=>{
         const userDB = await userModel.findById(id);
         done(null, userDB);
     });
-};
+}
