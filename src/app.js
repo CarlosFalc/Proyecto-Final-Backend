@@ -1,5 +1,5 @@
 import express from "express";
-import { engine } from "express-handlebars";
+//import { engine } from "express-handlebars";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import path from "path";
@@ -58,8 +58,8 @@ app.use(passport.session());
 
 //routes
 app.use(viewsRouter);
-app.use("/api/products",productsRouter);
-app.use("/api/carts",cartsRouter);
+app.use("/api/products", productsRouter);
+app.use("/api/carts", cartsRouter);
 app.use("/realTimeProducts", viewsRouter);
 app.use("/api/sessions", authRouter);
 app.use("/api/mockingproducts", mockRouter);
@@ -72,21 +72,6 @@ logger.info(`Server on listening on port ${port}`));
 
 //servidor de websocket
 const io = new Server(httpServer);
-
-//Configuración del chat
-const chatService = new ChatMongo();
-io.on("connection",async(socket)=>{
-	const messages = await chatService.getMessages();
-	socket.broadcast.emit("msgHistory", messages);
-
-	//Recibir el mensaje del cliente
-	socket.on("message",async(data)=>{
-		await chatService.addMessage(data);
-		const messages = await chatService.getMessages();
-		io.emit("msgHistory", messages);
-	});
-});
-
 
 //configuración del motor de plantillas
 app.engine("handlebars",handlebars.engine());
@@ -124,17 +109,18 @@ io.on("connection", async(socket)=>{
     })
 });
 
+//Configuración del chat
+const chatService = new ChatMongo();
+io.on("connection",async(socket)=>{
+	const messages = await chatService.getMessages();
+	io.emit("msgHistory", messages);
+
+	//Recibir el mensaje del cliente
+	socket.on("message",async(data)=>{
+		await chatService.addMessage(data);
+		const messages = await chatService.getMessages();
+		io.emit("msgHistory", messages);
+	})
+});
+
 export {app}
-
-// io.on("connection", async (socket) => {
-// 	console.log("id: " + socket.client.conn.id);
-
-// 	const items = await productsService.getProducts();
-// 	socket.emit("itemShow", items);
-
-// 	socket.on("item", async (product) => {
-// 		await productsService.addProduct(product);
-// 		const items = await productsService.getProducts();
-// 		io.emit("itemShow", items);
-// 	});
-// });
