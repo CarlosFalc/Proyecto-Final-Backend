@@ -13,14 +13,17 @@
 		<input type="text" placeholder="Categoría" name="category" />
 		<input type="text" placeholder="URL de imágen" name="thumbnails" /><br>
 		<br><button type="submit">Agregar Producto</button><br>
-
 	<hr />
+	
+	<h4>Borrar Servicio:</h4>
+	<input type="text" id= "idProduct" placeholder="id">
+	<button id="deleteProduct">borrar Producto</button>
+	<hr />
+
+	<div id="getProducts"></div>
+
 	</form>
 	
-
-	<h3>Listado de Servicios:</h3>
-	<div id="divServices"></div>
-</div>
 
 <script src="socket.io/socket.io.js"></script>
 <script src="/js/realTimeProducts.js"></script>

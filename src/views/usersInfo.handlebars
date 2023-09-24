@@ -1,0 +1,13 @@
+<h1>Información de los usuarios</h1>
+
+
+{{#each getDtoUsers}}
+            <div>               
+                Nombre: {{this.nombre}} -  Apellido: {{this.apellido}} - Email: {{this.email}} - rol: {{this.rol}} - id: {{this.id}}   
+                 <button onclick="modifyUserRole(`{{this.id}}`)">Modificar Rol</button>  
+                 <button onclick="removeUser(`{{this.id}}`)">Eliminar Usuario</button>           
+                <br></br>
+            </div>
+{{/each}}
+
+<script src="/js/usersInfo.js"></script>
