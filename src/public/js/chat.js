@@ -22,7 +22,7 @@ socketClient.on("msgHistory",(data)=>{
     msgContainer.innerHTML = "";
     data.forEach(element => {
         const parrafo = document.createElement("p");
-        parrafo.innerHTML = `user: ${element.user} >> message: ${element.message}`;
+        parrafo.innerHTML = `${JSON.stringify(element)}`;
         msgContainer.appendChild((parrafo));
     });
 });
