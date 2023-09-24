@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendRecoveryEmail = async(userEmail, token)=>{
-    const link = `http://localhost:8080/reset-password?token=${token}`;
+    const link = `https://proyecto-final-backend-carlos-falcon.onrender.com/reset-password?token=${token}`;
 
     await transporter.sendMail({
         from: "Servicios de Armados / Instalaciones",
@@ -35,4 +35,44 @@ export const sendRecoveryEmail = async(userEmail, token)=>{
                 </div>
         `
     })
-}
+};
+
+export const deleteInactivityEmail = async(userEmail)=>{
+  
+    const link = `https://proyecto-final-backend-carlos-falcon.onrender.com/signup`;
+    
+    await transporter.sendMail({
+        from: "Servicios de Armados / Instalaciones",
+        to: userEmail,
+        subject: "Cuenta eliminada por inactividad",
+        html:`
+                <div>
+                    <h2>Cuenta Eliminada</h2>
+                    <p>Hola, tu cuenta fué eliminada por inactividad, si quieres volver a registrarte puedes hacerlo a través del siguiente enlace</p>
+                    <a href="${link}">
+                        <button>Ir a la página</button>
+                    </a>
+                </div>
+        `
+    })
+};
+
+export const deletedProductEmail = async(userEmail)=>{
+  
+    const link = `https://proyecto-final-backend-carlos-falcon.onrender.com/login`;
+    
+    await transporter.sendMail({
+        from: "Servicios de Armados / Instalaciones",
+        to: userEmail,
+        subject: "Producto Eliminado",
+        html:`
+                <div>
+                    <h2>Producto Eliminado</h2>
+                    <p>Hola, tu producto ha sido eliminado de la página, puedes verificarlo a través del siguiente enlace</p>
+                    <a href="${link}">
+                        <button>Ir a la página</button>
+                    </a>
+                </div>
+        `
+    })
+};
