@@ -8,10 +8,13 @@ const userManager = new Usermongo();
 export const sendRecovery = async(req, res)=>{
     const {email} = req.body;
     try {
+        if (!email) {
+            return res.send("Favor ingresar un correo electrónico <a href=/forgot-password>volver</a>");
+        }
         const user = await userManager.getUserByEmail(email);
         const token = generateEmailToken(email, 180);
         await sendRecoveryEmail(email, token);
-        res.send("se ha enviado un link a tu correo electrónico")
+        res.send("Se ha enviado un link a tu correo electrónico")
     } catch (error) {
         res.json({status: "error", message: error.message});
     }
