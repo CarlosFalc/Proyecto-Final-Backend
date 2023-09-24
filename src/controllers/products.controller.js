@@ -3,23 +3,24 @@ import { CustomError } from "../services/errors/customError.service.js";
 import { generateProductErrorParams } from "../services/productErrorParams.service.js";
 import { EError } from "../enums/Eerror.js";
 import { logger } from "../utils/logger.js";
-// se importa el modelo de productos
-// import { ProductsModel } from "../daos/models/product.model.js";
+import { Usermongo } from "../dao/managers/users.mongo.js";
+import { deletedProductEmail } from "../utils/message.js";
 
 //services
 const productsService = new ProductsMongo();
+const userManager = new Usermongo();
 
 export const getProducts = async(req,res)=>{
     try {
         const {limit=10,page=1,sort,category,stock} = req.query;
         if(!["asc","desc"].includes(sort)){
-            res.json({status:"error", message:"ordenamiento no valido, solo puede ser asc o desc"})
+            res.status(400).json({status:"error", message:"ordenamiento no valido, solo puede ser asc o desc"});
         };
         const sortValue = sort === "asc" ? 1 : -1;
         const stockValue = stock === 0 ? undefined : parseInt(stock);
         let query = {};
-        if(category && stockValue){
-            query = {category: category, stock:stockValue}
+        if(category && stock){
+            query = {category: category, stock: stockValue}
         } else {
             if(category || stockValue){
                 if(category){
@@ -29,16 +30,14 @@ export const getProducts = async(req,res)=>{
                 }
             }
         }
-        // console.log("query: ", query)
         const baseUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
-        //baseUrl: http://localhost:8080/api/products
         const result = await productsService.getPaginate(query, {
             page,
             limit,
             sort:{price:sortValue},
             lean:true
         });
-        // console.log("result: ", result);
+        
         const response = {
             status: "success",
             payload: result.docs,
@@ -49,9 +48,8 @@ export const getProducts = async(req,res)=>{
             hasPrevPage: result.hasPrevPage,
             hasNextPage: result.hasNextPage,
             prevLink: result.hasPrevPage ? `${baseUrl}?page=${result.prevPage}` : null,
-            nextLink: result.hasNextPage ? `${baseUrl}?page=${result.nextPage}` : null,
-        }
-        // console.log("response: ", response);
+            nextLink: result.hasNextPage ? `${baseUrl}?page=${result.nextPage}` : null
+        };
         res.json(response);
     } catch (error) {
         res.status(500).json({status:"error", message: error.message});
@@ -68,7 +66,7 @@ export const addProductControl = async (req, res)=>{
                 message: "Error en la creación del producto",
                 errorCode: EError.INVALID_JSON
             });
-            // return res.status(400).json({status: "error", message: "Cada campo debe ser llenado"})
+            
         }
     
         const newProduct = req.body;
@@ -136,6 +134,10 @@ export const deleteProduct = async(req,res)=>{
         if(req.user.role === "premium" && JSON.stringify(product.owner) == JSON.stringify(req.user._id) || req.user.role === "admin"){
         //luego eliminamos el producto
         const productList = await productsService.deleteProduct(productId);
+        const ownerProduct = await userManager.getUserById(product.owner);
+        if (ownerProduct.role === "premium") {
+            deletedProductEmail(ownerProduct.email);
+        }
         res.json({status: "success", message: "product deleted", product: productList});
         logger.http(productList);
         } else{

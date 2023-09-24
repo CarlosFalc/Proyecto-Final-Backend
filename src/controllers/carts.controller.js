@@ -1,7 +1,5 @@
 import { CartsMongo } from "../dao/managers/carts.mongo.js";
 import { ProductsMongo } from "../dao/managers/products.mongo.js";
-//import { CartModel } from "../dao/models/carts.model.js";
-//import { ProductsModel } from "../dao/models/product.model.js";
 import { TicketMongo } from "../dao/managers/ticketManagerMongo.js"
 import { v4 as uuidv4 } from "uuid";
 import { logger } from "../utils/logger.js";
@@ -18,7 +16,7 @@ export const addCart = async(req,res)=>{
         res.json({status: "success", cart: cartAdded});
         logger.http(cartAdded);
     } catch (error) {
-        res.status(400).json({status:"error", error:error.message});
+        res.status(400).json({status:"error", message: error.message});
         logger.error("mensaje de error");
     }
 };
@@ -28,10 +26,10 @@ export const getCartById = async(req,res)=>{
         const cartId = req.params.cid;
         const cart = await cartsService.getCartById(cartId);
         if (cart) {
-        res.json({status:"success", cart:cart});
+        res.json({status:"success", cart: cart});
         logger.http(cart);
     } else{
-        res.status(400).json({status: "error", message: "Este carrito no existe"})
+        res.status(400).json({status: "error", message: "Este carrito no existe"});
     }
     } catch (error) {
         res.status(500).json({status:"error", message:error.message});
@@ -49,7 +47,7 @@ export const addProductToCart = async(req,res)=>{
             const product = await productsService.getProductById(productId);
             if (product) {
                 if(req.user.role === "premium" && JSON.stringify(product.owner) == JSON.stringify(req.user._id)){
-                    res.status(400).json({status: "error", message: "you are not allowed to add this product"});
+                    res.status(400).json({status: "error", message: "No puedes agregar este producto"});
                 } else{
                     const result = await cartsService.addProductToCart(cartId, productId);
                     res.json({status: "success", message: result});
@@ -95,7 +93,7 @@ export const updateQuantityInCart = async(req,res)=>{
         res.json({status:"success", result: response, message:"Producto actualizado"});
         logger.http(response);
     } catch (error) {
-        res.status(400).json({status:"error", message :error.message});
+        res.status(400).json({status:"error", error:error.message});
         logger.error("mensaje de error");
     }
 };
@@ -105,10 +103,8 @@ export const deleteProduct = async(req,res)=>{
         const cartId = req.params.cid;
         const productId = req.params.pid;
         const cart = await cartsService.getCartById(cartId);
-        // console.log("cart: ", cart);
         if (cart) {
             const product = await productsService.getProductById(productId);
-        // console.log("product: ", product);
             if (product) {
                 const response = await cartsService.deleteProduct(cartId, productId);
                 res.json({status:"success", result:response, message:"Producto eliminado"});
@@ -119,7 +115,7 @@ export const deleteProduct = async(req,res)=>{
             res.status(400).json({status: "error", message: "Este carrito no existe"});
         }
     } catch (error) {
-        res.status(400).json({status:"error", message:error.message});
+        res.status(500).json({status:"error", message: error.message});
         logger.error("mensaje de error");
     }
 };
