@@ -1,5 +1,7 @@
 import { Usermongo } from "../dao/managers/users.mongo.js";
 import { logger } from "../utils/logger.js";
+import { UsersDto } from "../dao/dto/users.dto.js";
+import { deleteInactivityEmail } from "../utils/message.js";
 
 const userManager = new Usermongo();
 
@@ -37,7 +39,7 @@ export const uploadDocumentsControl = async(req, res)=>{
         }
         logger.debug(req.files);
         const identificacion = req.files["identificacion"][0] || null;
-        const domicilio = req.files["domicilio"]?.[0] || null;
+        const domicilio = req.files["domicilio"][0] || null;
         const estadoDeCuenta = req.files["estadoDeCuenta"][0] || null;
         const docs = [];
         if (identificacion) {
@@ -64,4 +66,61 @@ export const uploadDocumentsControl = async(req, res)=>{
     } catch (error) {
         res.send(error.message); 
     }
+};
+
+export const getAllUsersController = async(req, res)=>{
+    try {
+        const getUsers = await userManager.getAllUsers();
+        const getDtoUsers = getUsers.map(userDB=> new UsersDto(userDB));
+        res.json({status: "success", data: getDtoUsers});
+    } catch (error) {
+        res.json({status: "error", message: error.message});
+    }
+};
+
+
+export const deleteInactiveUsersControl = async(req, res)=>{
+    try {
+        const getUsers = await userManager.getAllUsers();
+        const getDtoUsers = getUsers.map(userDB=> new UsersDto(userDB));
+        const inactiveUsers = getDtoUsers.filter((element)=>element.ult_conex_en_hrs > 48);
+        inactiveUsers.forEach(element => {
+            deleteInactivityEmail(element.email);
+            console.log(JSON.parse(JSON.stringify(element.id)));
+            userManager.deleteUser(JSON.parse(JSON.stringify(element.id)));
+        });
+        
+        res.json({status: "success", data: inactiveUsers});
+    } catch (error) {
+        res.json({status: "error", message: error.message});
+    }
+};
+
+export const removeUserControl = async(req,res)=>{
+    try {
+        const userId = req.params.uid;
+        const response = await userManager.deleteUser(userId);
+        res.json({status: "success", message: "usuario eliminado"});
+    } catch (error) {
+        res.status(400).json({status:"error", error:error.message});
+        logger.error("mensaje de error");
+    }
+};
+
+
+export const getUserByIdControl = async(req, res)=>{
+    try {
+        const userId = req.params.uid;
+        const user = await userManager.getUserById(userId);
+        if (user) {
+            res.json({status: "success", user: user});
+            logger.http(user);
+        } else{
+                  res.status(400).json({status: "error", message: "this user does not exist"});
+        }
+    } catch (error) {
+        res.status(500).json({status: "error", message: error.message});
+        logger.error("mensaje de error");
+    }
+
 };
