@@ -6,9 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "mocha test/integration.test.js",
-    "start": "node src/app.js",
-    "dev": "nodemon src/app.js"
-  },
+    "start": "node src/app.js"
+    },
   "keywords": [],
   "author": "",
   "license": "ISC",
